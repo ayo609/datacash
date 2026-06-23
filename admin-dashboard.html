@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – DataCash</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #060d1a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --orange: #f97316;
+      --purple: #7c3aed;
+      --purple-hover: #6d28d9;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: #060d1a;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .sidebar-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .sidebar-logo .logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .sidebar-logo .logo-text span {
+      color: var(--purple);
+      font-size: 10px;
+      display: block;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .sidebar-nav a:hover {
+      background: var(--card);
+      color: #fff;
+    }
+    .sidebar-nav a.active {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple);
+      font-weight: 700;
+      border-left: 3px solid var(--purple);
+    }
+    .sidebar-nav a .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .sidebar-logout {
+      margin: 10px 20px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--red);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+      width: calc(100% - 40px);
+    }
+    .sidebar-logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* ════════════════════════════════
+       MOBILE SIDEBAR TOGGLE
+    ════════════════════════════════ */
+    .mobile-menu-btn {
+      display: none;
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 45;
+    }
+    .sidebar-overlay.open {
+      display: block;
+    }
+
+    /* ════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════ */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 20px 24px 60px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .topbar h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar-right .admin-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .topbar-right .admin-role {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(124, 58, 237, 0.25);
+    }
+    .avatar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ════════════════════════════════
+       STATS CARDS - 6 Cards
+    ════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stat-card:hover {
+      border-color: #253d5e;
+      transform: translateY(-2px);
+    }
+    .stat-card .stat-info .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-info .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .stat-card .stat-info .stat-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .stat-card .stat-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-icon.users {
+      background: rgba(45, 122, 237, 0.15);
+      color: var(--blue);
+    }
+    .stat-icon.deposits {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+    .stat-icon.withdrawals {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+    }
+    .stat-icon.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold);
+    }
+    .stat-icon.revenue {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple);
+    }
+    .stat-icon.data {
+      background: rgba(6, 182, 212, 0.15);
+      color: #06b6d4;
+    }
+
+    /* Second row stats */
+    .stats-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* ════════════════════════════════
+       TWO COLUMN LAYOUT
+    ════════════════════════════════ */
+    .two-col {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .panel-header a {
+      font-size: 12px;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .panel-header a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Recent Activity Table ── */
+    .activity-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .activity-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .activity-table td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #c5d0de;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+    }
+    .activity-table tr:last-child td {
+      border-bottom: none;
+    }
+    .td-user {
+      font-weight: 600;
+      color: #fff;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tx-type {
+      font-weight: 600;
+      color: #fff;
+    }
+    .tx-amount.positive {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .tx-amount.negative {
+      color: var(--red);
+      font-weight: 700;
+    }
+    .badge-status {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold);
+    }
+    .badge-completed {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+    .badge-initiated {
+      background: rgba(45, 122, 237, 0.15);
+      color: var(--blue);
+    }
+    .badge-failed {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+    }
+
+    /* ── Pending Actions List ── */
+    .pending-list {
+      padding: 4px 0;
+    }
+    .pending-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pending-item:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .pending-item:last-child {
+      border-bottom: none;
+    }
+    .pi-info .pi-type {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .pi-info .pi-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .pi-count {
+      background: var(--gold);
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pi-count.zero {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--green);
+    }
+    .empty-pending {
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ════════════════════════════════
+       TOAST
+    ════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 340px;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .spinner-sm {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ════════════════════════════════
+       MOBILE
+    ════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .main-content {
+        margin-left: 220px;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stats-grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -280px;
+        z-index: 50;
+        transition: left 0.3s;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 16px 12px 80px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .stats-grid-2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .stat-card {
+        padding: 14px;
+      }
+      .stat-card .stat-info .stat-value {
+        font-size: 22px;
+      }
+      .topbar h1 {
+        font-size: 20px;
+      }
+      .topbar-right .admin-name {
+        display: none;
+      }
+    }
+    @media (max-width: 400px) {
+      .stats-grid,
+      .stats-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="data.jpg" alt="DataCash" />
+      <div class="logo-text">DataCash<span>Admin Panel</span></div>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="admin-dashboard.html" class="active"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li><a href="admin-users.html"><span class="nav-icon">👥</span> Users</a></li>
+      <li><a href="admin-deposits.html"><span class="nav-icon">💰</span> Deposits</a></li>
+      <li><a href="admin-withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a></li>
+      <li><a href="admin-data-redemptions.html"><span class="nav-icon">📱</span> Data Redemptions</a></li>
+      <li><a href="admin-transactions.html"><span class="nav-icon">📋</span> Transactions</a></li>
+      <li><a href="admin-referrals.html"><span class="nav-icon">👥</span> Referrals</a></li>
+      <li><a href="admin-notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+      <li><a href="admin-settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
+    </ul>
+    <button class="sidebar-logout" id="logoutBtn">🚪 Logout</button>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu-btn" onclick="openSidebar()">☰</button>
+        <h1>📊 Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <span class="admin-name" id="adminName">Admin</span>
+        <span class="admin-role" id="adminRole">Admin</span>
+        <a href="admin-profile.html" class="avatar-btn" id="avatarBtn">A</a>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row 1 - 4 Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="totalUsers">0</div>
+          <div class="stat-sub" id="newUsersToday">+0 today</div>
+        </div>
+        <div class="stat-icon users">👥</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Approved Deposits</div>
+          <div class="stat-value" id="approvedDeposits">₦0</div>
+          <div class="stat-sub" id="pendingDeposits">⏳ ₦0 pending</div>
+        </div>
+        <div class="stat-icon deposits">💰</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Approved Withdrawals</div>
+          <div class="stat-value" id="approvedWithdrawals">₦0</div>
+          <div class="stat-sub" id="pendingWithdrawals">⏳ ₦0 pending</div>
+        </div>
+        <div class="stat-icon withdrawals">💸</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Pending Requests</div>
+          <div class="stat-value" id="pendingCount">0</div>
+          <div class="stat-sub">Needs attention</div>
+        </div>
+        <div class="stat-icon pending">⏳</div>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row 2 - 3 Cards -->
+    <div class="stats-grid-2">
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Platform Revenue</div>
+          <div class="stat-value" id="totalRevenue">₦0</div>
+          <div class="stat-sub">Deposits - Withdrawals</div>
+        </div>
+        <div class="stat-icon revenue">💎</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Data Redeemed</div>
+          <div class="stat-value" id="totalDataRedeemed">0 MB</div>
+          <div class="stat-sub" id="dataRequestsPending">⏳ 0 pending</div>
+        </div>
+        <div class="stat-icon data">📱</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="stat-label">Total Referrals</div>
+          <div class="stat-value" id="totalReferrals">0</div>
+          <div class="stat-sub" id="activeReferrers">0 active referrers</div>
+        </div>
+        <div class="stat-icon users">👥</div>
+      </div>
+    </div>
+
+    <!-- Two Column: Activity + Pending -->
+    <div class="two-col">
+      <!-- Recent Activity -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>📋 Recent Activity</h3>
+          <a href="admin-transactions.html">View all →</a>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentActivityBody">
+              <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pending Actions -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>⏳ Pending Actions</h3>
+        </div>
+        <div class="pending-list" id="pendingList">
+          <div class="empty-pending">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where,
+      getDocs, getCountFromServer, onSnapshot, orderBy, limit
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let unsubscribeTx = null;
+
+    function toast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      clearTimeout(t._t);
+      t._t = setTimeout(() => { t.className = "toast"; }, 4000);
+    }
+
+    function fmt(n) {
+      return Number(n || 0).toLocaleString("en-NG");
+    }
+
+    function fmtNaira(n) {
+      return "₦" + fmt(n);
+    }
+
+    // ── Load dashboard data ──
+    async function loadDashboard() {
+      try {
+        // Total users
+        const usersSnap = await getCountFromServer(collection(db, "users"));
+        document.getElementById("totalUsers").textContent = fmt(usersSnap.data().count);
+
+        // Users today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const newUsersQ = query(collection(db, "users"), where("createdAt", ">=", today));
+        const newUsersSnap = await getCountFromServer(newUsersQ);
+        document.getElementById("newUsersToday").textContent = `+${newUsersSnap.data().count} today`;
+
+        // Active referrers
+        const usersSnapAll = await getDocs(collection(db, "users"));
+        let activeReferrersCount = 0;
+        usersSnapAll.forEach(d => {
+          if (d.data().referralCount > 0) activeReferrersCount++;
+        });
+        document.getElementById("activeReferrers").textContent = `${activeReferrersCount} active referrers`;
+
+        // ── Deposits: Separate approved vs pending ──
+        let approvedDep = 0,
+          pendingDep = 0;
+        try {
+          const depSnap = await getDocs(collection(db, "deposits"));
+          depSnap.forEach(d => {
+            const dep = d.data();
+            const status = (dep.status || "").toLowerCase();
+            if (status === "completed" || status === "approved") {
+              approvedDep += dep.amount || 0;
+            } else if (status === "pending") {
+              pendingDep += dep.amount || 0;
+            }
+          });
+        } catch (e) { /* deposits collection may not exist */ }
+
+        document.getElementById("approvedDeposits").textContent = fmtNaira(approvedDep);
+        document.getElementById("pendingDeposits").textContent = `⏳ ${fmtNaira(pendingDep)} pending`;
+
+        // ── Withdrawals: Separate approved vs pending ──
+        let approvedWith = 0,
+          pendingWith = 0;
+        try {
+          const withSnap = await getDocs(collection(db, "withdrawals"));
+          withSnap.forEach(d => {
+            const w = d.data();
+            const status = (w.status || "").toLowerCase();
+            if (status === "completed" || status === "approved") {
+              approvedWith += w.amount || 0;
+            } else if (status === "pending") {
+              pendingWith += w.amount || 0;
+            }
+          });
+        } catch (e) { /* withdrawals collection may not exist */ }
+
+        // Also check user documents for withdrawals array
+        usersSnapAll.forEach(d => {
+          const userData = d.data();
+          if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
+            userData.withdrawals.forEach(w => {
+              const status = (w.status || "").toLowerCase();
+              if (status === "completed" || status === "approved") {
+                approvedWith += w.amount || 0;
+              } else if (status === "pending") {
+                pendingWith += w.amount || 0;
+              }
+            });
+          }
+        });
+
+        document.getElementById("approvedWithdrawals").textContent = fmtNaira(approvedWith);
+        document.getElementById("pendingWithdrawals").textContent = `⏳ ${fmtNaira(pendingWith)} pending`;
+
+        // Revenue = approved deposits - approved withdrawals
+        document.getElementById("totalRevenue").textContent = fmtNaira(approvedDep - approvedWith);
+
+        // ── Data redeemed ──
+        let totalDataMB = 0,
+          pendingDataCount = 0;
+        try {
+          const dataSnap = await getDocs(collection(db, "redemptionRequests"));
+          dataSnap.forEach(d => {
+            const r = d.data();
+            const status = (r.status || "").toLowerCase();
+            if (status === "approved" || status === "completed") {
+              totalDataMB += r.dataMB || r.dataAmount || 0;
+            } else if (status === "pending") {
+              pendingDataCount++;
+            }
+          });
+        } catch (e) { /* collection may not exist */ }
+        // Also check redemptions collection
+        try {
+          const redSnap = await getDocs(collection(db, "redemptions"));
+          redSnap.forEach(d => {
+            const r = d.data();
+            const status = (r.status || "").toLowerCase();
+            if (status === "approved" || status === "completed") {
+              totalDataMB += r.dataMB || r.dataAmount || 0;
+            } else if (status === "pending") {
+              pendingDataCount++;
+            }
+          });
+        } catch (e) { /* collection may not exist */ }
+
+        document.getElementById("totalDataRedeemed").textContent = fmt(totalDataMB) + " MB";
+        document.getElementById("dataRequestsPending").textContent = `⏳ ${pendingDataCount} pending`;
+
+        // ── Total referrals ──
+        let totalRef = 0;
+        usersSnapAll.forEach(d => {
+          totalRef += d.data().referralCount || 0;
+        });
+        document.getElementById("totalReferrals").textContent = fmt(totalRef);
+
+        // ── Pending counts for the pending list ──
+        let pendDepCount = 0,
+          pendWithCount = 0;
+        try {
+          const pendDepSnap = await getCountFromServer(query(collection(db, "deposits"), where("status", "==", "pending")));
+          pendDepCount = pendDepSnap.data().count;
+        } catch (e) {}
+        try {
+          const pendWithSnap = await getCountFromServer(query(collection(db, "withdrawals"), where("status", "==", "pending")));
+          pendWithCount = pendWithSnap.data().count;
+        } catch (e) {}
+
+        // Also count pending withdrawals in user docs
+        usersSnapAll.forEach(d => {
+          const wds = d.data().withdrawals;
+          if (wds && Array.isArray(wds)) {
+            wds.forEach(w => {
+              if ((w.status || "").toLowerCase() === "pending") pendWithCount++;
+            });
+          }
+        });
+
+        const totalPending = pendDepCount + pendWithCount + pendingDataCount;
+        document.getElementById("pendingCount").textContent = totalPending;
+
+        // Pending list
+        const pendingList = document.getElementById("pendingList");
+        const items = [
+          { type: "Pending Deposits", count: pendDepCount, link: "admin-deposits.html", amount: pendingDep },
+          { type: "Pending Withdrawals", count: pendWithCount, link: "admin-withdrawals.html", amount: pendingWith },
+          { type: "Pending Data Requests", count: pendingDataCount, link: "admin-data-redemptions.html", amount: 0 }
+        ];
+
+        const hasPending = items.some(i => i.count > 0);
+        if (!hasPending) {
+          pendingList.innerHTML = '<div class="empty-pending">✅ No pending requests — all clear!</div>';
+        } else {
+          pendingList.innerHTML = items.filter(i => i.count > 0).map(p => `
+            <div class="pending-item" onclick="window.location.href='${p.link}'">
+              <div class="pi-info">
+                <div class="pi-type">${p.type}</div>
+                <div class="pi-meta">${p.amount > 0 ? fmtNaira(p.amount) + ' awaiting review' : 'Needs attention'}</div>
+              </div>
+              <span class="pi-count">${p.count}</span>
+            </div>`).join("");
+        }
+
+      } catch (err) {
+        console.error("Dashboard load error:", err);
+        toast("Failed to load some dashboard data.", "error");
+      }
+    }
+
+    // ── Real-time recent activity ──
+    function listenRecentActivity() {
+      if (unsubscribeTx) unsubscribeTx();
+
+      const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"), limit(8));
+
+      unsubscribeTx = onSnapshot(q, (snap) => {
+        const tbody = document.getElementById("recentActivityBody");
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted)">No transactions yet</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = snap.docs.map(d => {
+          const tx = d.data();
+          const isPos = (tx.type || "").toLowerCase() !== "withdrawal";
+          const sign = isPos ? "+" : "-";
+          const colorClass = isPos ? "positive" : "negative";
+          const status = (tx.status || "").toLowerCase();
+          const statusClass = status === "completed" ? "badge-completed" :
+            status === "pending" ? "badge-pending" :
+            status === "initiated" ? "badge-initiated" : "badge-failed";
+          const userEmail = tx.userEmail || tx.email || "—";
+          const userShort = userEmail.length > 18 ? userEmail.slice(0, 16) + "…" : userEmail;
+
+          return `
+            <tr>
+              <td class="td-user" title="${userEmail}">${userShort}</td>
+              <td class="tx-type">${tx.type || "—"}</td>
+              <td class="tx-amount ${colorClass}">${sign}₦${fmt(tx.amount)}</td>
+              <td><span class="badge-status ${statusClass}">${tx.status || "Initiated"}</span></td>
+            </tr>`;
+        }).join("");
+      }, (err) => {
+        console.warn("Activity listener error:", err);
+      });
+    }
+
+    // ── Auth guard ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists() || (snap.data().role !== "admin" && snap.data().role !== "superadmin")) {
+        await signOut(auth);
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      currentUser = user;
+      const data = snap.data();
+
+      // ✅ Show actual admin name
+      const adminFullName = data.fullName || data.firstName || "Admin";
+      document.getElementById("adminName").textContent = adminFullName;
+      document.getElementById("adminRole").textContent = data.role === "superadmin" ? "Super Admin" : "Admin";
+      document.getElementById("avatarBtn").textContent = adminFullName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) || "A";
+
+      loadDashboard();
+      listenRecentActivity();
+    });
+
+    // ── Logout ──
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "admin-login.html";
+    });
+
+    // ── Mobile sidebar ──
+    window.openSidebar = function() {
+      document.getElementById("sidebar").classList.add("open");
+      document.getElementById("sidebarOverlay").classList.add("open");
+    };
+    window.closeSidebar = function() {
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebarOverlay").classList.remove("open");
+    };
+  </script>
+</body>
+</html>
