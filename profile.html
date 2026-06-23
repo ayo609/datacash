@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile – DataCash</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1b2a;
+      --card: #112236;
+      --border: #1e3450;
+      --blue: #2196f3;
+      --blue-hover: #1976d2;
+      --muted: #8a9bb0;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #0d1b2a;
+      --red: #ef4444;
+      --green: #22c55e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(30, 52, 80, 0.3);
+    }
+    .menu-btn {
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .menu-btn:hover {
+      background: #1e3450;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .notif-btn {
+      position: relative;
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .notif-btn:hover {
+      background: #1e3450;
+    }
+    .avatar-btn {
+      background: #1a3a5c;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .avatar-btn:hover {
+      background: #1e4a80;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 24px 18px 100px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .page-subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    /* ── TABS ROW ── */
+    .tabs-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-active {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: default;
+    }
+    .tab-email {
+      background: var(--card);
+      color: var(--muted);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: default;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 240px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px 18px 26px;
+      border: 1px solid var(--border);
+    }
+
+    /* Card header */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 22px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 200px;
+    }
+    .edit-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .edit-btn:hover {
+      background: var(--blue-hover);
+    }
+    .edit-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── PHOTO BOX ── */
+    .photo-box {
+      background: var(--dark-input);
+      border-radius: 14px;
+      padding: 18px 16px 20px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+    }
+    .photo-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .avatar-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      background: #1a3a5c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+    }
+    .photo-info-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .photo-info-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Change photo button */
+    .change-photo-btn {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .change-photo-btn:hover {
+      border-color: var(--blue);
+      color: var(--text);
+    }
+    .change-photo-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    #photoFileInput {
+      display: none;
+    }
+
+    .photo-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .photo-note svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--blue);
+    }
+
+    /* ── FORM FIELDS ── */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c5d0de;
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 15px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input::placeholder {
+      color: #4a6080;
+    }
+    .form-input:focus {
+      border-color: var(--blue);
+    }
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(13, 27, 42, 0.5);
+    }
+
+    /* Save button */
+    .save-btn {
+      display: none;
+      width: 100%;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .save-btn:hover {
+      background: var(--blue-hover);
+    }
+    .save-btn:active {
+      transform: scale(0.98);
+    }
+    .save-btn:disabled {
+      background: #1a3450;
+      color: #4a6080;
+      cursor: not-allowed;
+    }
+    .save-btn.visible {
+      display: block;
+    }
+
+    .cancel-btn {
+      display: none;
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 13px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cancel-btn:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+    .cancel-btn.visible {
+      display: block;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2c40;
+      color: var(--text);
+      padding: 13px 22px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    /* WhatsApp FAB */
+    .wa-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background: #25d366;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+      z-index: 150;
+      transition: transform 0.2s;
+      text-decoration: none;
+    }
+    .wa-fab:hover {
+      transform: scale(1.08);
+    }
+    .wa-fab svg {
+      width: 28px;
+      height: 28px;
+      fill: #fff;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <div class="topbar">
+    <a href="dashboard.html" class="menu-btn" aria-label="Back to dashboard">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+        <rect width="18" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="6" width="12" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="12" width="16" height="2" rx="1" fill="#e0e6f0" />
+      </svg>
+    </a>
+    <div class="topbar-right">
+      <a href="notifications.html" class="notif-btn" aria-label="Notifications">
+        🔔
+      </a>
+      <a href="profile.html" class="avatar-btn" id="navAvatar">??</a>
+    </div>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+    <h1>Profile</h1>
+    <p class="page-subtitle">Manage your personal information and profile photo.</p>
+
+    <!-- TABS -->
+    <div class="tabs-row">
+      <span class="tab-active">Account</span>
+      <span class="tab-email" id="emailTab">Signed in as: Loading…</span>
+    </div>
+
+    <!-- CARD -->
+    <div class="card">
+
+      <!-- Card header -->
+      <div class="card-header">
+        <div>
+          <div class="card-title">Your details</div>
+          <div class="card-desc">Keep your name accurate for bank withdrawals and account verification.</div>
+        </div>
+        <button class="edit-btn" id="editBtn" onclick="toggleEdit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Edit
+        </button>
+      </div>
+
+      <!-- Photo box -->
+      <div class="photo-box">
+        <div class="photo-row">
+          <div class="avatar-circle" id="avatarCircle">
+            <span id="avatarInitials">??</span>
+          </div>
+          <div>
+            <div class="photo-info-title">Profile photo</div>
+            <div class="photo-info-sub">JPG or PNG, recommended square image.</div>
+          </div>
+        </div>
+
+        <input type="file" id="photoFileInput" accept="image/jpeg,image/png" onchange="handlePhotoChange(event)" />
+
+        <button class="change-photo-btn" onclick="document.getElementById('photoFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+          Change photo
+        </button>
+
+        <div class="photo-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          Your photo is optional, but it helps keep your account recognizable.
+        </div>
+      </div>
+
+      <!-- First name -->
+      <div class="form-group">
+        <label class="form-label">First name</label>
+        <input type="text" class="form-input" id="firstName" placeholder="First name" disabled />
+      </div>
+
+      <!-- Last name -->
+      <div class="form-group">
+        <label class="form-label">Last name</label>
+        <input type="text" class="form-input" id="lastName" placeholder="Last name" disabled />
+      </div>
+
+      <!-- Username / Referral Code -->
+      <div class="form-group">
+        <label class="form-label">Referral Code</label>
+        <input type="text" class="form-input" id="username" placeholder="Referral code" disabled />
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label class="form-label">Phone number</label>
+        <input type="text" class="form-input" id="phoneDisplay" placeholder="Phone number" disabled />
+      </div>
+
+      <!-- Save / Cancel -->
+      <button class="save-btn" id="saveBtn" onclick="saveProfile()">Save changes</button>
+      <button class="cancel-btn" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
+
+    </div>
+  </div>
+
+  <!-- WhatsApp FAB -->
+  <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="wa-fab" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.12.56 4.18 1.62 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.19-1.25-6.2-3.48-8.52zM12 22c-1.85 0-3.67-.5-5.24-1.44l-.38-.22-3.9 1.02 1.04-3.8-.25-.4A9.93 9.93 0 0 1 2 12C2 6.48 6.48 2 12 2c2.66 0 5.16 1.04 7.04 2.92A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10zm5.47-7.34c-.3-.15-1.77-.87-2.04-.97s-.47-.15-.67.15-.77.97-.94 1.17-.35.22-.65.07a8.16 8.16 0 0 1-2.4-1.48 9.02 9.02 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52s.2-.3.3-.5.05-.37-.02-.52-.67-1.62-.92-2.22c-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37s-1.04 1.02-1.04 2.48 1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.5 1.7.64.72.23 1.37.2 1.89.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z" />
+    </svg>
+  </a>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── FIREBASE ── -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentUser = null;
+    let isEditMode = false;
+    let pendingPhoto = null;
+    let originalData = {};
+
+    // ── Toast ──
+    function showToast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
+      t.innerHTML = `${icon} ${msg}`;
+      t.className = `toast show ${type}`;
+      clearTimeout(t._timeout);
+      t._timeout = setTimeout(() => { t.className = "toast"; }, 3500);
+    }
+
+    // ── Set avatar display ──
+    function setAvatar(photoURL, initials) {
+      const circle = document.getElementById("avatarCircle");
+      const span = document.getElementById("avatarInitials");
+      const navBtn = document.getElementById("navAvatar");
+
+      if (photoURL) {
+        span.style.display = "none";
+        let img = circle.querySelector("img");
+        if (!img) {
+          img = document.createElement("img");
+          circle.appendChild(img);
+        }
+        img.src = photoURL;
+      } else {
+        span.style.display = "";
+        span.textContent = initials || "??";
+        const img = circle.querySelector("img");
+        if (img) img.remove();
+      }
+      navBtn.textContent = initials || "??";
+    }
+
+    // ── Load user data ──
+    async function loadProfile(user) {
+      document.getElementById("emailTab").textContent = `Signed in as: ${user.email || "Unknown"}`;
+
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const data = snap.exists() ? snap.data() : {};
+
+        const firstName = data.firstName || user.displayName?.split(" ")[0] || "";
+        const lastName = data.lastName || user.displayName?.split(" ").slice(1).join(" ") || "";
+        const referralCode = data.referralCode || "";
+        const phone = data.phone || "";
+        const photoURL = data.photoURL || user.photoURL || "";
+
+        originalData = { firstName, lastName, referralCode, phone, photoURL };
+
+        document.getElementById("firstName").value = firstName;
+        document.getElementById("lastName").value = lastName;
+        document.getElementById("username").value = referralCode;
+        document.getElementById("phoneDisplay").value = phone;
+
+        const initials = ((firstName[0] || "") + (lastName[0] || "")).toUpperCase() ||
+          (user.email || "U").slice(0, 2).toUpperCase();
+        setAvatar(photoURL, initials);
+
+      } catch (err) {
+        console.error("Load profile error:", err);
+        showToast("Failed to load profile data.", "error");
+      }
+    }
+
+    // ── Auth state ──
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        await loadProfile(user);
+      } else {
+        showToast("Please sign in to view profile.", "error");
+        setTimeout(() => window.location.href = 'login.html', 2000);
+      }
+    });
+
+    // ── Toggle edit mode ──
+    window.toggleEdit = function() {
+      isEditMode = !isEditMode;
+
+      const fields = ["firstName", "lastName"];
+      fields.forEach(id => {
+        document.getElementById(id).disabled = !isEditMode;
+      });
+
+      document.getElementById("editBtn").innerHTML = isEditMode ?
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M18 6L6 18M6 6l12 12"/></svg> Cancel` :
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit`;
+
+      document.getElementById("saveBtn").className = isEditMode ? "save-btn visible" : "save-btn";
+      document.getElementById("cancelBtn").className = isEditMode ? "cancel-btn visible" : "cancel-btn";
+
+      if (!isEditMode) cancelEdit();
+    };
+
+    // ── Cancel edit ──
+    window.cancelEdit = function() {
+      isEditMode = false;
+      pendingPhoto = null;
+
+      document.getElementById("firstName").value = originalData.firstName || "";
+      document.getElementById("lastName").value = originalData.lastName || "";
+      document.getElementById("firstName").disabled = true;
+      document.getElementById("lastName").disabled = true;
+
+      const initials = ((originalData.firstName?.[0] || "") + (originalData.lastName?.[0] || "")).toUpperCase() ||
+        (currentUser?.email || "U").slice(0, 2).toUpperCase();
+      setAvatar(originalData.photoURL, initials);
+
+      document.getElementById("editBtn").innerHTML =
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit`;
+      document.getElementById("saveBtn").className = "save-btn";
+      document.getElementById("cancelBtn").className = "cancel-btn";
+    };
+
+    // ── Handle photo selection ──
+    window.handlePhotoChange = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        showToast("Only JPG or PNG files are allowed.", "error");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("Image must be under 5MB.", "error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pendingPhoto = { file, dataUrl: e.target.result };
+
+        const circle = document.getElementById("avatarCircle");
+        document.getElementById("avatarInitials").style.display = "none";
+        let img = circle.querySelector("img");
+        if (!img) {
+          img = document.createElement("img");
+          circle.appendChild(img);
+        }
+        img.src = e.target.result;
+
+        showToast("Photo selected. Save to apply.", "info");
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // ── Save profile ──
+    window.saveProfile = async function() {
+      if (!currentUser) {
+        showToast("Not logged in.", "error");
+        return;
+      }
+
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+
+      if (!firstName) {
+        showToast("First name is required.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("saveBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+      try {
+        let photoURL = originalData.photoURL || "";
+
+        // Upload new photo if selected
+        if (pendingPhoto) {
+          const storageRef = ref(storage, `profilePhotos/${currentUser.uid}`);
+          await uploadBytes(storageRef, pendingPhoto.file);
+          photoURL = await getDownloadURL(storageRef);
+        }
+
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        // Update Firebase Auth profile
+        await updateProfile(currentUser, {
+          displayName: fullName,
+          photoURL: photoURL || null
+        });
+
+        // Update Firestore user doc
+        const userRef = doc(db, "users", currentUser.uid);
+        await setDoc(userRef, {
+          firstName,
+          lastName,
+          fullName,
+          photoURL: photoURL || "",
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        // Refresh local state
+        originalData = {
+          ...originalData,
+          firstName,
+          lastName,
+          photoURL,
+          fullName
+        };
+        pendingPhoto = null;
+
+        const initials = ((firstName[0] || "") + (lastName[0] || "")).toUpperCase();
+        setAvatar(photoURL, initials);
+
+        showToast("✅ Profile updated successfully!", "success");
+
+        // Exit edit mode
+        document.getElementById("firstName").disabled = true;
+        document.getElementById("lastName").disabled = true;
+        isEditMode = false;
+        document.getElementById("editBtn").innerHTML =
+          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit`;
+        document.getElementById("saveBtn").className = "save-btn";
+        document.getElementById("cancelBtn").className = "cancel-btn";
+
+        // Update nav avatar
+        document.getElementById("navAvatar").textContent = initials;
+
+      } catch (err) {
+        console.error("Save profile error:", err);
+        showToast("Failed to save. Please try again.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Save changes";
+      }
+    };
+  </script>
+</body>
+</html>
