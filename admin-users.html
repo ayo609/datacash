@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Users Management – DataCash Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #060d1a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --orange: #f97316;
+      --purple: #7c3aed;
+      --purple-hover: #6d28d9;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: #060d1a;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .sidebar-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .sidebar-logo .logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .sidebar-logo .logo-text span {
+      color: var(--purple);
+      font-size: 10px;
+      display: block;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .sidebar-nav a:hover {
+      background: var(--card);
+      color: #fff;
+    }
+    .sidebar-nav a.active {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple);
+      font-weight: 700;
+      border-left: 3px solid var(--purple);
+    }
+    .sidebar-nav a .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .sidebar-logout {
+      margin: 10px 20px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--red);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+      width: calc(100% - 40px);
+    }
+    .sidebar-logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* ════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════ */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 20px 24px 60px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .topbar h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .admin-role {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(124, 58, 237, 0.25);
+    }
+    .avatar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ════════════════════════════════
+       TOOLBAR
+    ════════════════════════════════ */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 16px 12px 42px;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-wrap input::placeholder {
+      color: #4a6080;
+    }
+    .search-wrap input:focus {
+      border-color: var(--blue);
+    }
+    .search-wrap .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+    }
+    .filter-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 36px 12px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .filter-select option {
+      background: var(--card);
+      color: var(--text);
+    }
+    .btn-export {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-export:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* ════════════════════════════════
+       STATS BAR
+    ════════════════════════════════ */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      align-items: center;
+    }
+    .stats-bar strong {
+      color: var(--text);
+    }
+
+    /* ════════════════════════════════
+       TABLE
+    ════════════════════════════════ */
+    .table-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    thead th {
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    thead th:hover {
+      color: #fff;
+    }
+    thead th .sort-arrow {
+      margin-left: 4px;
+      font-size: 10px;
+    }
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #c5d0de;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+      white-space: nowrap;
+    }
+    tbody tr {
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .td-name {
+      font-weight: 600;
+      color: #fff;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .td-email {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge-role {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .role-user {
+      background: rgba(45, 122, 237, 0.12);
+      color: var(--blue);
+    }
+    .role-admin {
+      background: rgba(124, 58, 237, 0.12);
+      color: var(--purple);
+    }
+    .role-superadmin {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red);
+    }
+    .status-active {
+      color: var(--green);
+      font-weight: 600;
+    }
+    .status-suspended {
+      color: var(--red);
+      font-weight: 600;
+    }
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--dark-input);
+      color: var(--text);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-action:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .btn-action.danger {
+      color: var(--red);
+    }
+    .btn-action.danger:hover {
+      border-color: var(--red);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* ════════════════════════════════
+       PAGINATION
+    ════════════════════════════════ */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .pagination-info {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pagination-btns {
+      display: flex;
+      gap: 4px;
+    }
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--dark-input);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .page-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+    .page-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .page-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ════════════════════════════════
+       USER DETAIL MODAL
+    ════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px 24px;
+      width: 90%;
+      max-width: 550px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+    .modal-box h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .modal-close:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+      font-size: 13px;
+    }
+    .detail-row .dl {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .detail-row .dv {
+      color: #fff;
+      font-weight: 600;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-all;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-suspend {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+    }
+    .btn-suspend:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    .btn-activate {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+    .btn-activate:hover {
+      background: rgba(34, 197, 94, 0.25);
+    }
+
+    /* ════════════════════════════════
+       TOAST
+    ════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 340px;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    /* Loading */
+    .loading-row td {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .main-content {
+        margin-left: 220px;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 16px 12px 80px;
+      }
+      .toolbar {
+        flex-direction: column;
+      }
+      .search-wrap {
+        min-width: 100%;
+      }
+      .topbar h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="data.jpg" alt="DataCash" />
+      <div class="logo-text">DataCash<span>Admin Panel</span></div>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="admin-dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li><a href="admin-users.html" class="active"><span class="nav-icon">👥</span> Users</a></li>
+      <li><a href="admin-deposits.html"><span class="nav-icon">💰</span> Deposits</a></li>
+      <li><a href="admin-withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a></li>
+      <li><a href="admin-data-redemptions.html"><span class="nav-icon">📱</span> Data Redemptions</a></li>
+      <li><a href="admin-transactions.html"><span class="nav-icon">📋</span> Transactions</a></li>
+      <li><a href="admin-referrals.html"><span class="nav-icon">👥</span> Referrals</a></li>
+      <li><a href="admin-notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+      <li><a href="admin-settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
+    </ul>
+    <button class="sidebar-logout" id="logoutBtn">🚪 Logout</button>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="main-content">
+    <div class="topbar">
+      <h1>👥 Users</h1>
+      <div class="topbar-right">
+        <span class="admin-name" id="adminName">Admin</span>
+        <span class="admin-role" id="adminRole">Admin</span>
+        <a href="admin-profile.html" class="avatar-btn" id="avatarBtn">A</a>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search by name, email, phone or referral code…" oninput="filterUsers()" />
+      </div>
+      <select class="filter-select" id="statusFilter" onchange="filterUsers()">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+      <select class="filter-select" id="roleFilter" onchange="filterUsers()">
+        <option value="all">All Roles</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="superadmin">Super Admin</option>
+      </select>
+      <button class="btn-export" onclick="exportCSV()">📥 Export CSV</button>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      Showing <strong id="showingCount">0</strong> of <strong id="totalUsersCount">0</strong> total users
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortTable('fullName')">Name <span class="sort-arrow">↕</span></th>
+              <th onclick="sortTable('email')">Email <span class="sort-arrow">↕</span></th>
+              <th>Phone</th>
+              <th>Balance</th>
+              <th onclick="sortTable('role')">Role <span class="sort-arrow">↕</span></th>
+              <th>Status</th>
+              <th onclick="sortTable('createdAt')">Joined <span class="sort-arrow">↕</span></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr class="loading-row"><td colspan="8">Loading users…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination">
+        <div class="pagination-info" id="pageInfo">Page 1</div>
+        <div class="pagination-btns" id="pageBtns"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- User Detail Modal -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal-box">
+      <h2>User Details <button class="modal-close" onclick="closeUserModal()">✕</button></h2>
+      <div id="userDetailContent"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, collection, getDocs, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let allUsers = [];
+    let filteredUsers = [];
+    let currentPage = 1;
+    const perPage = 20;
+    let sortField = "createdAt";
+    let sortDir = "desc";
+    let selectedUserId = null;
+
+    function toast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      clearTimeout(t._t);
+      t._t = setTimeout(() => { t.className = "toast"; }, 4000);
+    }
+
+    function fmt(n) {
+      return Number(n || 0).toLocaleString("en-NG");
+    }
+
+    function fmtDate(ts) {
+      if (!ts) return "—";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    // ── Load all users ──
+    async function loadAllUsers() {
+      try {
+        const snap = await getDocs(collection(db, "users"));
+        allUsers = [];
+        snap.forEach(d => {
+          allUsers.push({ id: d.id, ...d.data() });
+        });
+        // Default sort by newest
+        allUsers.sort((a, b) => {
+          const ta = a.createdAt?.seconds || 0;
+          const tb = b.createdAt?.seconds || 0;
+          return tb - ta;
+        });
+        filteredUsers = [...allUsers];
+        renderPage();
+      } catch (err) {
+        console.error("Load users error:", err);
+        toast("Failed to load users.", "error");
+      }
+    }
+
+    // ── Filter users ──
+    window.filterUsers = function() {
+      const search = (document.getElementById("searchInput").value || "").toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+      const role = document.getElementById("roleFilter").value;
+
+      filteredUsers = allUsers.filter(u => {
+        const matchSearch = !search ||
+          (u.fullName || "").toLowerCase().includes(search) ||
+          (u.email || "").toLowerCase().includes(search) ||
+          (u.phone || "").toLowerCase().includes(search) ||
+          (u.referralCode || "").toLowerCase().includes(search);
+        const matchStatus = status === "all" || u.status === status;
+        const matchRole = role === "all" || u.role === role || (!u.role && role === "user");
+        return matchSearch && matchStatus && matchRole;
+      });
+
+      currentPage = 1;
+      renderPage();
+    };
+
+    // ── Sort table ──
+    window.sortTable = function(field) {
+      if (sortField === field) {
+        sortDir = sortDir === "asc" ? "desc" : "asc";
+      } else {
+        sortField = field;
+        sortDir = "asc";
+      }
+      filteredUsers.sort((a, b) => {
+        let va = a[field];
+        let vb = b[field];
+        if (field === "createdAt") {
+          va = a.createdAt?.seconds || 0;
+          vb = b.createdAt?.seconds || 0;
+        }
+        if (typeof va === "string") va = va.toLowerCase();
+        if (typeof vb === "string") vb = vb.toLowerCase();
+        if (va < vb) return sortDir === "asc" ? -1 : 1;
+        if (va > vb) return sortDir === "asc" ? 1 : -1;
+        return 0;
+      });
+      currentPage = 1;
+      renderPage();
+    };
+
+    // ── Render page ──
+    function renderPage() {
+      const totalPages = Math.ceil(filteredUsers.length / perPage) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      const start = (currentPage - 1) * perPage;
+      const pageUsers = filteredUsers.slice(start, start + perPage);
+
+      document.getElementById("showingCount").textContent = filteredUsers.length;
+      document.getElementById("totalUsersCount").textContent = allUsers.length;
+      document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages} (${filteredUsers.length} users)`;
+
+      const tbody = document.getElementById("usersTableBody");
+      if (pageUsers.length === 0) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="8">No users found matching your filters.</td></tr>';
+      } else {
+        tbody.innerHTML = pageUsers.map(u => {
+          const balance = u.wallet?.balance || 0;
+          const role = u.role || "user";
+          const status = u.status || "active";
+          const roleClass = role === "superadmin" ? "role-superadmin" : role === "admin" ? "role-admin" : "role-user";
+          const statusClass = status === "suspended" ? "status-suspended" : "status-active";
+          const name = u.fullName || u.firstName || "—";
+          const email = u.email || "—";
+          const phone = u.phone || "—";
+
+          return `
+            <tr>
+              <td class="td-name" title="${name}">${name}</td>
+              <td class="td-email" title="${email}">${email}</td>
+              <td>${phone}</td>
+              <td>₦${fmt(balance)}</td>
+              <td><span class="badge-role ${roleClass}">${role}</span></td>
+              <td class="${statusClass}">${status}</td>
+              <td>${fmtDate(u.createdAt)}</td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-action" onclick="viewUser('${u.id}')">👁 View</button>
+                  ${status === 'active'
+                    ? `<button class="btn-action danger" onclick="toggleUserStatus('${u.id}', 'suspend')">🚫 Suspend</button>`
+                    : `<button class="btn-action" onclick="toggleUserStatus('${u.id}', 'activate')" style="color:var(--green)">✅ Activate</button>`}
+                </div>
+              </td>
+            </tr>`;
+        }).join("");
+      }
+
+      // Pagination buttons
+      const pageBtns = document.getElementById("pageBtns");
+      let btnsHtml = "";
+      btnsHtml += `<button class="page-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (totalPages <= 7 || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+          btnsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        } else if (i === 2 && currentPage > 4) {
+          btnsHtml += `<button class="page-btn" disabled>…</button>`;
+        } else if (i === totalPages - 1 && currentPage < totalPages - 3) {
+          btnsHtml += `<button class="page-btn" disabled>…</button>`;
+        }
+      }
+      btnsHtml += `<button class="page-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
+      pageBtns.innerHTML = btnsHtml;
+    }
+
+    window.goToPage = function(page) {
+      const totalPages = Math.ceil(filteredUsers.length / perPage) || 1;
+      if (page < 1 || page > totalPages) return;
+      currentPage = page;
+      renderPage();
+      document.querySelector(".table-container").scrollIntoView({ behavior: "smooth" });
+    };
+
+    // ── View user detail ──
+    window.viewUser = function(uid) {
+      const user = allUsers.find(u => u.id === uid);
+      if (!user) return;
+      selectedUserId = uid;
+
+      const balance = user.wallet?.balance || 0;
+      const bonus = user.wallet?.bonus || 0;
+      const totalDep = user.wallet?.totalDeposited || 0;
+      const totalWith = user.wallet?.totalWithdrawn || 0;
+      const dataMB = user.dataMB || 0;
+      const refCode = user.referralCode || "—";
+      const refBy = user.referredBy || "None";
+      const refCount = user.referralCount || 0;
+      const refEarnings = user.referralEarnings || 0;
+      const status = user.status || "active";
+      const role = user.role || "user";
+      const emailVerified = user.emailVerified ? "✅ Yes" : "❌ No";
+      const phoneVerified = user.phoneVerified ? "✅ Yes" : "❌ No";
+      const twoFA = user.twoFactorEnabled ? "✅ Enabled" : "❌ Disabled";
+
+      document.getElementById("userDetailContent").innerHTML = `
+        <div class="detail-row"><span class="dl">Full Name</span><span class="dv">${user.fullName || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Email</span><span class="dv">${user.email || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Phone</span><span class="dv">${user.phone || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Role</span><span class="dv">${role}</span></div>
+        <div class="detail-row"><span class="dl">Status</span><span class="dv">${status}</span></div>
+        <div class="detail-row"><span class="dl">Balance</span><span class="dv">₦${fmt(balance)}</span></div>
+        <div class="detail-row"><span class="dl">Bonus</span><span class="dv">₦${fmt(bonus)}</span></div>
+        <div class="detail-row"><span class="dl">Total Deposited</span><span class="dv">₦${fmt(totalDep)}</span></div>
+        <div class="detail-row"><span class="dl">Total Withdrawn</span><span class="dv">₦${fmt(totalWith)}</span></div>
+        <div class="detail-row"><span class="dl">Data Balance</span><span class="dv">${fmt(dataMB)} MB</span></div>
+        <div class="detail-row"><span class="dl">Referral Code</span><span class="dv">${refCode}</span></div>
+        <div class="detail-row"><span class="dl">Referred By</span><span class="dv">${refBy}</span></div>
+        <div class="detail-row"><span class="dl">Referral Count</span><span class="dv">${refCount}</span></div>
+        <div class="detail-row"><span class="dl">Referral Earnings</span><span class="dv">₦${fmt(refEarnings)}</span></div>
+        <div class="detail-row"><span class="dl">Email Verified</span><span class="dv">${emailVerified}</span></div>
+        <div class="detail-row"><span class="dl">Phone Verified</span><span class="dv">${phoneVerified}</span></div>
+        <div class="detail-row"><span class="dl">2FA</span><span class="dv">${twoFA}</span></div>
+        <div class="detail-row"><span class="dl">Joined</span><span class="dv">${fmtDate(user.createdAt)}</span></div>
+      `;
+
+      document.getElementById("modalActions").innerHTML = status === "active"
+        ? `<button class="btn-suspend" onclick="toggleUserStatus('${uid}', 'suspend')">🚫 Suspend User</button>
+           <button class="btn-suspend" style="background:rgba(239,68,68,0.08);color:var(--red)" onclick="deleteUser('${uid}')">🗑 Delete User</button>`
+        : `<button class="btn-activate" onclick="toggleUserStatus('${uid}', 'activate')">✅ Activate User</button>`;
+
+      document.getElementById("userModal").classList.add("open");
+    };
+
+    window.closeUserModal = function() {
+      document.getElementById("userModal").classList.remove("open");
+      selectedUserId = null;
+    };
+
+    // ── Toggle user status ──
+    window.toggleUserStatus = async function(uid, action) {
+      const newStatus = action === "suspend" ? "suspended" : "active";
+      const confirmMsg = action === "suspend"
+        ? "Are you sure you want to suspend this user? They will not be able to log in."
+        : "Activate this user? They will regain full access.";
+
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        await updateDoc(doc(db, "users", uid), {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+
+        // Update local data
+        const idx = allUsers.findIndex(u => u.id === uid);
+        if (idx >= 0) allUsers[idx].status = newStatus;
+        filterUsers();
+        closeUserModal();
+
+        toast(`User ${newStatus === 'suspended' ? 'suspended' : 'activated'} successfully.`, "success");
+      } catch (err) {
+        console.error("Status update error:", err);
+        toast("Failed to update user status.", "error");
+      }
+    };
+
+    // ── Delete user ──
+    window.deleteUser = async function(uid) {
+      if (!confirm("⚠️ Are you sure you want to DELETE this user? This action cannot be undone!")) return;
+      if (!confirm("Final confirmation: Delete this user permanently?")) return;
+
+      try {
+        await updateDoc(doc(db, "users", uid), {
+          status: "deleted",
+          deletedAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        allUsers = allUsers.filter(u => u.id !== uid);
+        filterUsers();
+        closeUserModal();
+        toast("User deleted successfully.", "success");
+      } catch (err) {
+        console.error("Delete error:", err);
+        toast("Failed to delete user.", "error");
+      }
+    };
+
+    // ── Export CSV ──
+    window.exportCSV = function() {
+      const rows = filteredUsers.map(u => [
+        u.fullName || "",
+        u.email || "",
+        u.phone || "",
+        u.wallet?.balance || 0,
+        u.role || "user",
+        u.status || "active",
+        fmtDate(u.createdAt)
+      ]);
+      const csv = "Name,Email,Phone,Balance,Role,Status,Joined\n" +
+        rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "datacash-users.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("CSV exported!", "success");
+    };
+
+    // Close modal on overlay click
+    document.getElementById("userModal").addEventListener("click", function(e) {
+      if (e.target === this) closeUserModal();
+    });
+
+    // ── Auth guard ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists() || (snap.data().role !== "admin" && snap.data().role !== "superadmin")) {
+        await signOut(auth);
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      const data = snap.data();
+      document.getElementById("adminName").textContent = data.fullName || data.firstName || "Admin";
+      document.getElementById("adminRole").textContent = data.role === "superadmin" ? "Super Admin" : "Admin";
+      document.getElementById("avatarBtn").textContent = (data.fullName || data.email || "A").slice(0, 2).toUpperCase();
+
+      loadAllUsers();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "admin-login.html";
+    });
+  </script>
+</body>
+</html>
