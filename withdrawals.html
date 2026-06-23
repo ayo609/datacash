@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Withdraw</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --card2: #0a1628;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #fff;
+      --dark-input: #060d1a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --green-hover: #16a34a;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 36px 16px 60px;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: center;
+    }
+    .logo-wrap img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 30px 26px 34px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .header h2 {
+      font-size: 22px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header h2 .icon-wrap {
+      color: var(--blue);
+      font-size: 20px;
+    }
+    .header .history-link {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 500;
+      background: rgba(45, 122, 237, 0.15);
+      padding: 6px 14px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: background .2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .header .history-link:hover {
+      background: rgba(45, 122, 237, 0.25);
+    }
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    /* ── Step Indicator ── */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      background: rgba(22, 32, 51, 0.6);
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .step-indicator .step-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .step-indicator .step-badge span {
+      background: #162033;
+      border-radius: 30px;
+      padding: 2px 12px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .step-indicator .step-badge .active-step {
+      background: var(--blue);
+      color: #fff;
+    }
+    .step-indicator .dots {
+      display: flex;
+      gap: 6px;
+    }
+    .step-indicator .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 20px;
+      background: var(--border);
+      transition: 0.3s;
+    }
+    .step-indicator .dot.active {
+      background: var(--blue);
+      width: 24px;
+    }
+    .step-indicator .dot.done {
+      background: var(--blue);
+      opacity: 0.5;
+    }
+
+    /* ── Available Chip ── */
+    .available-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #162033;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .available-chip .bal {
+      font-weight: 700;
+      color: var(--green);
+    }
+    .available-chip .bal.zero {
+      color: var(--red);
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: #c8d4e5;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .form-group .hint {
+      font-size: 12px;
+      color: #5a7090;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-control::placeholder {
+      color: #3d5070;
+    }
+    .form-control:focus {
+      border-color: var(--blue);
+    }
+    .form-control:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── Amount Preview ── */
+    .amount-preview {
+      background: var(--dark-input);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--border);
+      margin-top: 6px;
+    }
+    .amount-preview .label {
+      color: #5a7090;
+      font-size: 13px;
+    }
+    .amount-preview .value {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--green);
+    }
+    .amount-preview .value.placeholder {
+      color: #3d5070;
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    /* ── Buttons ── */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .btn {
+      flex: 1;
+      padding: 13px 0;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .btn-back {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      flex: 0.6;
+    }
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--blue);
+    }
+    .btn-next {
+      background: var(--blue);
+      color: #fff;
+      flex: 1;
+    }
+    .btn-next:hover {
+      background: var(--blue-hover);
+    }
+    .btn-next:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-success {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: var(--green-hover);
+    }
+
+    /* ── Success Step ── */
+    .success-icon {
+      text-align: center;
+      padding: 20px 0 10px;
+      font-size: 56px;
+      color: var(--green);
+    }
+    .success-details {
+      background: var(--dark-input);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 16px 0 10px;
+      border: 1px solid var(--border);
+    }
+    .success-details .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .success-details .row .value {
+      color: #fff;
+      font-weight: 500;
+    }
+    .processing-text {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    /* ── Field errors ── */
+    .field-error {
+      font-size: 11.5px;
+      color: #ef4444;
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.show {
+      display: block;
+    }
+
+    /* ── Spinner ── */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Hidden ── */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ── Review box ── */
+    .review-box {
+      background: var(--dark-input);
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .review-row .val {
+      color: #fff;
+      font-weight: 500;
+    }
+    .review-row.total-row {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 6px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .review-row.total-row .val {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .warning-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #f87171;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px 16px 24px;
+      }
+      .step-indicator {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .actions {
+        flex-direction: column;
+      }
+      .btn-back {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="data.jpg" alt="DataCash" />
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <div class="header">
+      <h2><span class="icon-wrap">↑</span> Withdraw</h2>
+      <a href="history.html" class="history-link">🕐 History</a>
+    </div>
+    <p class="subtitle">Bank Transfer • NGN • Min ₦2,000</p>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-badge">
+        Step <span id="stepNumber" class="active-step">1</span> of 3
+      </div>
+      <div class="dots">
+        <span class="dot active" id="dot1"></span>
+        <span class="dot" id="dot2"></span>
+        <span class="dot" id="dot3"></span>
+      </div>
+    </div>
+
+    <!-- Available Chip -->
+    <div class="available-chip">
+      💰 Available: <span class="bal zero" id="availableBal">₦0</span>
+    </div>
+
+    <!-- ============ STEP 1: Bank Details ============ -->
+    <div id="step1">
+      <div class="form-group">
+        <label>Enter bank details</label>
+        <p style="font-size:12px;color:#5a7090;margin-bottom:12px;">Ensure account details are correct. Withdrawals are processed by bank transfer.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="bankName">Bank Name</label>
+        <input type="text" id="bankName" class="form-control" placeholder="e.g., Access Bank" />
+        <span class="field-error" id="err-bankName">Please enter your bank name.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="accountName">Account Holder Name</label>
+        <input type="text" id="accountName" class="form-control" placeholder="Full name on account" />
+        <span class="field-error" id="err-accountName">Please enter the account holder name.</span>
+      </div>
+
+      <div class="form-group">
+        <label for="accountNumber">Account Number</label>
+        <input type="text" id="accountNumber" class="form-control" placeholder="10-digit account number" maxlength="10" inputmode="numeric" />
+        <span class="field-error" id="err-accountNumber">Please enter a valid 10-digit account number.</span>
+      </div>
+
+      <div class="actions">
+        <a href="dashboard.html" class="btn btn-back">← Back</a>
+        <button class="btn btn-next" onclick="goToStep(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ============ STEP 2: Enter Amount ============ -->
+    <div id="step2" class="hidden">
+      <div class="form-group">
+        <label for="amount">Enter amount (NGN)</label>
+        <p style="font-size:12px;color:#5a7090;margin-bottom:8px;">Minimum withdrawal is ₦2,000. No processing fee.</p>
+        <input type="text" id="amount" class="form-control" placeholder="e.g., 2,000" inputmode="decimal" />
+        <span class="field-error" id="err-amount">Minimum withdrawal is ₦2,000.</span>
+      </div>
+
+      <div class="form-group">
+        <div class="amount-preview">
+          <span class="label">You will receive</span>
+          <span class="value placeholder" id="totalToReceive">—</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-back" onclick="goToStep(1)">← Back</button>
+        <button class="btn btn-next" id="confirmAmountBtn" onclick="goToStep(3)">Review →</button>
+      </div>
+    </div>
+
+    <!-- ============ STEP 3: Confirm & Review ============ -->
+    <div id="step3" class="hidden">
+      <div class="review-box">
+        <div class="review-row">
+          <span>Bank</span>
+          <span class="val" id="confirmBank">—</span>
+        </div>
+        <div class="review-row">
+          <span>Account Name</span>
+          <span class="val" id="confirmAccountName">—</span>
+        </div>
+        <div class="review-row">
+          <span>Account Number</span>
+          <span class="val" id="confirmAccountNumber">—</span>
+        </div>
+        <div class="review-row total-row">
+          <span>Amount to Receive</span>
+          <span class="val" id="confirmAmount">—</span>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        ⚠️ Please double-check all details. Withdrawals cannot be reversed.
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-back" onclick="goToStep(2)">← Back</button>
+        <button class="btn btn-next" id="submitWithdrawalBtn" onclick="submitWithdrawal()">
+          ✓ Confirm Withdrawal
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ SUCCESS (replaces old step 4) ============ -->
+    <div id="stepSuccess" class="hidden">
+      <div class="success-icon">✅</div>
+      <h3 style="text-align:center;font-size:20px;margin-bottom:4px;">Withdrawal Submitted!</h3>
+      <p style="text-align:center;color:var(--muted);font-size:13px;">Your withdrawal is being processed.</p>
+
+      <div class="success-details">
+        <div class="row">
+          <span>Bank</span>
+          <span class="value" id="successBank">—</span>
+        </div>
+        <div class="row">
+          <span>Account</span>
+          <span class="value" id="successAccount">—</span>
+        </div>
+        <div class="row">
+          <span>Amount</span>
+          <span class="value" id="successAmount">—</span>
+        </div>
+      </div>
+
+      <p class="processing-text">⏳ Usually processed within 24 hours. Redirecting to history…</p>
+
+      <div class="actions" style="margin-top:16px;">
+        <a href="history.html" class="btn btn-success">📋 View History</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Firebase (modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, arrayUnion, serverTimestamp,
+      runTransaction, collection, addDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ─── Firebase Config ──────────────────────────────────
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ─── State ────────────────────────────────────────────
+    let currentStep = 1;
+    let userData = null;
+    let withdrawalData = {};
+
+    // ─── DOM refs ─────────────────────────────────────────
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const stepSuccess = document.getElementById('stepSuccess');
+    const stepNumber = document.getElementById('stepNumber');
+    const dots = [document.getElementById('dot1'), document.getElementById('dot2'), document.getElementById('dot3')];
+    const availableBal = document.getElementById('availableBal');
+
+    const bankName = document.getElementById('bankName');
+    const accountName = document.getElementById('accountName');
+    const accountNumber = document.getElementById('accountNumber');
+    const amountInput = document.getElementById('amount');
+    const totalToReceive = document.getElementById('totalToReceive');
+
+    const confirmBank = document.getElementById('confirmBank');
+    const confirmAccountName = document.getElementById('confirmAccountName');
+    const confirmAccountNumber = document.getElementById('confirmAccountNumber');
+    const confirmAmount = document.getElementById('confirmAmount');
+
+    const successBank = document.getElementById('successBank');
+    const successAccount = document.getElementById('successAccount');
+    const successAmount = document.getElementById('successAmount');
+
+    // ─── Toast ────────────────────────────────────────────
+    function toast(msg, type = 'info') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = 'toast'; }, 4000);
+    }
+
+    // ─── Show step ────────────────────────────────────────
+    window.goToStep = function(step) {
+      // Validate before moving forward
+      if (step === 2 && !validateStep1()) return;
+      if (step === 3 && !validateStep2()) return;
+
+      currentStep = step;
+      step1.classList.add('hidden');
+      step2.classList.add('hidden');
+      step3.classList.add('hidden');
+      stepSuccess.classList.add('hidden');
+
+      if (step === 1) step1.classList.remove('hidden');
+      else if (step === 2) step2.classList.remove('hidden');
+      else if (step === 3) {
+        step3.classList.remove('hidden');
+        populateConfirm();
+      }
+
+      stepNumber.textContent = step;
+      stepNumber.className = 'active-step';
+
+      dots.forEach((dot, i) => {
+        dot.className = 'dot';
+        if (i < step) dot.classList.add('done');
+        if (i === step - 1) dot.classList.add('active');
+      });
+
+      updateAvailableChip();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ─── Validate Step 1 ──────────────────────────────────
+    function validateStep1() {
+      let ok = true;
+      document.querySelectorAll('#step1 .field-error').forEach(el => el.classList.remove('show'));
+
+      if (!bankName.value.trim()) {
+        document.getElementById('err-bankName').classList.add('show');
+        ok = false;
+      }
+      if (!accountName.value.trim()) {
+        document.getElementById('err-accountName').classList.add('show');
+        ok = false;
+      }
+      if (!accountNumber.value.trim() || accountNumber.value.trim().length !== 10 || !/^\d{10}$/.test(accountNumber.value.trim())) {
+        document.getElementById('err-accountNumber').classList.add('show');
+        ok = false;
+      }
+
+      if (ok) {
+        withdrawalData.bankName = bankName.value.trim();
+        withdrawalData.accountName = accountName.value.trim();
+        withdrawalData.accountNumber = accountNumber.value.trim();
+      }
+      return ok;
+    }
+
+    // ─── Validate Step 2 ──────────────────────────────────
+    function validateStep2() {
+      document.getElementById('err-amount').classList.remove('show');
+      const val = parseFloat(amountInput.value.replace(/,/g, ''));
+      if (isNaN(val) || val < 2000) {
+        document.getElementById('err-amount').classList.add('show');
+        return false;
+      }
+      // Check if user has enough balance
+      const balance = userData?.wallet?.balance || 0;
+      if (val > balance) {
+        toast(`Insufficient balance. Available: ₦${balance.toLocaleString()}`, 'error');
+        return false;
+      }
+      withdrawalData.amount = val;
+      return true;
+    }
+
+    // ─── Amount calculation (no fee) ──────────────────────
+    function calculateAmount() {
+      const val = parseFloat(amountInput.value.replace(/,/g, ''));
+      if (isNaN(val) || val < 2000) {
+        totalToReceive.textContent = '—';
+        totalToReceive.className = 'value placeholder';
+        return;
+      }
+      totalToReceive.textContent = `₦${val.toLocaleString()}`;
+      totalToReceive.className = 'value';
+      withdrawalData.amount = val;
+    }
+
+    amountInput.addEventListener('input', calculateAmount);
+    amountInput.addEventListener('blur', function() {
+      if (this.value) {
+        const num = parseFloat(this.value.replace(/,/g, ''));
+        if (!isNaN(num)) this.value = num.toLocaleString();
+      }
+    });
+
+    // ─── Populate confirm ─────────────────────────────────
+    function populateConfirm() {
+      confirmBank.textContent = withdrawalData.bankName;
+      confirmAccountName.textContent = withdrawalData.accountName;
+      confirmAccountNumber.textContent = withdrawalData.accountNumber;
+      confirmAmount.textContent = `₦${withdrawalData.amount.toLocaleString()}`;
+    }
+
+    // ─── Update available chip ────────────────────────────
+    function updateAvailableChip() {
+      if (userData && userData.wallet && userData.wallet.balance !== undefined) {
+        const bal = userData.wallet.balance;
+        availableBal.textContent = `₦${bal.toLocaleString()}`;
+        if (bal > 0) {
+          availableBal.classList.remove('zero');
+          availableBal.style.color = '#22c55e';
+        } else {
+          availableBal.classList.add('zero');
+          availableBal.style.color = '#ef4444';
+        }
+      } else {
+        availableBal.textContent = '₦0';
+        availableBal.classList.add('zero');
+        availableBal.style.color = '#ef4444';
+      }
+    }
+
+    // ─── Submit withdrawal ────────────────────────────────
+    window.submitWithdrawal = async function() {
+      const btn = document.getElementById('submitWithdrawalBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Processing…';
+
+      try {
+        const user = auth.currentUser;
+        if (!user) throw new Error('Please sign in to withdraw.');
+
+        const userRef = doc(db, 'users', user.uid);
+
+        await runTransaction(db, async (transaction) => {
+          const docSnap = await transaction.get(userRef);
+          if (!docSnap.exists()) throw new Error('User profile not found.');
+
+          const data = docSnap.data();
+          const balance = data.wallet?.balance || 0;
+
+          if (balance < withdrawalData.amount) {
+            throw new Error(`Insufficient balance. Available: ₦${balance.toLocaleString()}`);
+          }
+
+          const withdrawal = {
+            type: 'withdrawal',
+            bankName: withdrawalData.bankName,
+            accountName: withdrawalData.accountName,
+            accountNumber: withdrawalData.accountNumber,
+            amount: withdrawalData.amount,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+            processedAt: null,
+          };
+
+          transaction.update(userRef, {
+            'wallet.balance': balance - withdrawalData.amount,
+            'wallet.totalWithdrawn': (data.wallet?.totalWithdrawn || 0) + withdrawalData.amount,
+            'withdrawals': arrayUnion(withdrawal),
+            'updatedAt': serverTimestamp(),
+          });
+        });
+
+        // Also save to transactions collection for history
+        await addDoc(collection(db, "transactions"), {
+          uid: user.uid,
+          type: "Withdrawal",
+          amount: withdrawalData.amount,
+          method: "Bank Transfer",
+          bankName: withdrawalData.bankName,
+          accountName: withdrawalData.accountName,
+          accountNumber: withdrawalData.accountNumber,
+          status: "Initiated",
+          createdAt: serverTimestamp(),
+        });
+
+        // ─── Show success ──────────────────────────────────
+        successBank.textContent = withdrawalData.bankName;
+        successAccount.textContent = `${withdrawalData.accountName} (${withdrawalData.accountNumber})`;
+        successAmount.textContent = `₦${withdrawalData.amount.toLocaleString()}`;
+
+        // Refresh user data
+        await fetchUserData();
+
+        // Hide all steps, show success
+        step1.classList.add('hidden');
+        step2.classList.add('hidden');
+        step3.classList.add('hidden');
+        stepSuccess.classList.remove('hidden');
+        currentStep = 4;
+
+        toast('✅ Withdrawal submitted successfully!', 'success');
+
+        // ✅ Auto-redirect to history.html after 3 seconds
+        setTimeout(() => {
+          window.location.href = 'history.html';
+        }, 3000);
+
+      } catch (err) {
+        toast(err.message || 'Withdrawal failed. Please try again.', 'error');
+        console.error('[Withdraw]', err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✓ Confirm Withdrawal';
+      }
+    };
+
+    // ─── Fetch user data ──────────────────────────────────
+    async function fetchUserData() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const docSnap = await getDoc(doc(db, 'users', user.uid));
+        if (docSnap.exists()) {
+          userData = docSnap.data();
+          updateAvailableChip();
+        }
+      } catch (err) {
+        console.error('[Fetch user]', err);
+      }
+    }
+
+    // ─── Auth listener ────────────────────────────────────
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        toast('Please sign in to withdraw.', 'error');
+        setTimeout(() => window.location.href = 'login.html', 2000);
+        return;
+      }
+      await fetchUserData();
+    });
+
+    // ─── Account number: digits only ──────────────────────
+    accountNumber.addEventListener('input', function() {
+      this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    // ─── Initialize ──────────────────────────────────────
+    goToStep(1);
+  </script>
+</body>
+</html>
