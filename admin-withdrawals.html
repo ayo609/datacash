@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Withdrawals Management – DataCash Admin</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #060d1a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --purple: #7c3aed;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background: #060d1a;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 50;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .sidebar-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .sidebar-logo .logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .sidebar-logo .logo-text span {
+      color: var(--purple);
+      font-size: 10px;
+      display: block;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 8px 12px;
+      flex: 1;
+    }
+    .sidebar-nav li {
+      margin-bottom: 4px;
+    }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .sidebar-nav a:hover {
+      background: var(--card);
+      color: #fff;
+    }
+    .sidebar-nav a.active {
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple);
+      font-weight: 700;
+      border-left: 3px solid var(--purple);
+    }
+    .sidebar-nav a .nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .sidebar-logout {
+      margin: 10px 20px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--red);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+      width: calc(100% - 40px);
+    }
+    .sidebar-logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    /* ════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════ */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 20px 24px 60px;
+      min-height: 100vh;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .topbar h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .admin-role {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(124, 58, 237, 0.25);
+    }
+    .avatar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ════════════════════════════════
+       FILTER TABS
+    ════════════════════════════════ */
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .filter-tab:hover {
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .filter-tab.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .filter-tab .count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    /* ════════════════════════════════
+       TABLE
+    ════════════════════════════════ */
+    .table-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 950px;
+    }
+    thead th {
+      padding: 14px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 13px 14px;
+      font-size: 13px;
+      color: #c5d0de;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+      white-space: nowrap;
+    }
+    tbody tr {
+      transition: background 0.15s;
+    }
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .td-user {
+      font-weight: 600;
+      color: #fff;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .td-amount {
+      font-weight: 700;
+      color: var(--red);
+    }
+    .td-bank {
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--gold);
+    }
+    .badge-completed {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--green);
+    }
+    .badge-rejected {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+    }
+    .btn-detail {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--dark-input);
+      color: var(--blue);
+      transition: all 0.15s;
+    }
+    .btn-detail:hover {
+      border-color: var(--blue);
+      background: rgba(45, 122, 237, 0.1);
+    }
+    .btn-approve {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: var(--green);
+      color: #fff;
+      transition: all 0.15s;
+    }
+    .btn-approve:hover {
+      background: #16a34a;
+    }
+    .btn-reject {
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: var(--red);
+      color: #fff;
+      transition: all 0.15s;
+    }
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    /* ════════════════════════════════
+       MODALS
+    ════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 24px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+    .modal-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .modal-close:hover {
+      color: #fff;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(26, 45, 74, 0.5);
+      font-size: 13px;
+    }
+    .detail-row .dl {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .detail-row .dv {
+      color: #fff;
+      font-weight: 600;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-all;
+    }
+    .modal-box .reject-input {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      outline: none;
+      resize: vertical;
+      min-height: 70px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+    .btn-cancel {
+      background: #1a2c40;
+      color: var(--text);
+    }
+    .btn-cancel:hover {
+      background: #1e3450;
+    }
+    .btn-confirm-approve {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-confirm-approve:hover {
+      background: #16a34a;
+    }
+    .btn-confirm-reject {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-confirm-reject:hover {
+      background: #dc2626;
+    }
+
+    /* ════════════════════════════════
+       TOAST
+    ════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 340px;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .loading-row td {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .main-content {
+        margin-left: 220px;
+      }
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 16px 12px 80px;
+      }
+      .topbar h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="data.jpg" alt="DataCash" />
+      <div class="logo-text">DataCash<span>Admin Panel</span></div>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="admin-dashboard.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+      <li><a href="admin-users.html"><span class="nav-icon">👥</span> Users</a></li>
+      <li><a href="admin-deposits.html"><span class="nav-icon">💰</span> Deposits</a></li>
+      <li><a href="admin-withdrawals.html" class="active"><span class="nav-icon">💸</span> Withdrawals</a></li>
+      <li><a href="admin-data-redemptions.html"><span class="nav-icon">📱</span> Data Redemptions</a></li>
+      <li><a href="admin-transactions.html"><span class="nav-icon">📋</span> Transactions</a></li>
+      <li><a href="admin-referrals.html"><span class="nav-icon">👥</span> Referrals</a></li>
+      <li><a href="admin-notifications.html"><span class="nav-icon">🔔</span> Notifications</a></li>
+      <li><a href="admin-settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
+    </ul>
+    <button class="sidebar-logout" id="logoutBtn">🚪 Logout</button>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="main-content">
+    <div class="topbar">
+      <h1>💸 Withdrawals</h1>
+      <div class="topbar-right">
+        <span class="admin-name" id="adminName">Admin</span>
+        <span class="admin-role" id="adminRole">Admin</span>
+        <a href="admin-profile.html" class="avatar-btn" id="avatarBtn">A</a>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">All<span class="count" id="countAll">0</span></button>
+      <button class="filter-tab" data-filter="pending">⏳ Pending<span class="count" id="countPending">0</span></button>
+      <button class="filter-tab" data-filter="completed">✅ Approved<span class="count" id="countCompleted">0</span></button>
+      <button class="filter-tab" data-filter="rejected">❌ Rejected<span class="count" id="countRejected">0</span></button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Amount</th>
+              <th>Bank</th>
+              <th>Account Name</th>
+              <th>Account No.</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody">
+            <tr class="loading-row"><td colspan="8">Loading withdrawals…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+      <h3>📋 Withdrawal Details <button class="modal-close" onclick="closeDetailModal()">✕</button></h3>
+      <div id="detailContent"></div>
+      <div class="modal-actions" id="detailActions"></div>
+    </div>
+  </div>
+
+  <!-- Reject Modal -->
+  <div class="modal-overlay" id="rejectModal">
+    <div class="modal-box">
+      <h3>❌ Reject Withdrawal & Refund</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        Rejecting will refund the amount back to the user's wallet. Please provide a reason.
+      </p>
+      <textarea class="reject-input" id="rejectReason" placeholder="Enter rejection reason…"></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeRejectModal()">Cancel</button>
+        <button class="btn-confirm-reject" id="confirmRejectBtn" onclick="confirmReject()">Reject & Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, collection, getDocs,
+      serverTimestamp, runTransaction, query, orderBy, addDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let allWithdrawals = [];
+    let currentFilter = "all";
+    let selectedWithdrawalId = null;
+    let currentUser = null;
+
+    function toast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      clearTimeout(t._t);
+      t._t = setTimeout(() => { t.className = "toast"; }, 4000);
+    }
+
+    function fmt(n) {
+      return Number(n || 0).toLocaleString("en-NG");
+    }
+
+    function fmtDate(ts) {
+      if (!ts) return "—";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    // ── Load all withdrawals from users collection ──
+    async function loadWithdrawals() {
+      try {
+        // Get all users
+        const usersSnap = await getDocs(collection(db, "users"));
+        allWithdrawals = [];
+
+        usersSnap.forEach(userDoc => {
+          const userData = userDoc.data();
+          const userEmail = userData.email || "—";
+          const userName = userData.fullName || userData.firstName || "—";
+
+          // Check withdrawals array in user doc
+          if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
+            userData.withdrawals.forEach((w, index) => {
+              allWithdrawals.push({
+                id: `${userDoc.id}_${index}`,
+                uid: userDoc.id,
+                userEmail: userEmail,
+                userName: userName,
+                amount: w.amount || 0,
+                bankName: w.bankName || "—",
+                accountName: w.accountName || "—",
+                accountNumber: w.accountNumber || "—",
+                status: w.status || "pending",
+                fee: w.fee || 0,
+                total: w.total || w.amount || 0,
+                createdAt: w.createdAt || null,
+                processedAt: w.processedAt || null,
+                note: w.note || "",
+                indexInArray: index
+              });
+            });
+          }
+
+          // Also check withdrawals subcollection if exists
+        });
+
+        // Also check standalone withdrawals collection
+        try {
+          const withdrawSnap = await getDocs(query(collection(db, "withdrawals"), orderBy("createdAt", "desc")));
+          withdrawSnap.forEach(d => {
+            const w = d.data();
+            // Avoid duplicates
+            const exists = allWithdrawals.find(ex => ex.uid === w.uid && ex.amount === w.amount && ex.createdAt?.seconds === w.createdAt?.seconds);
+            if (!exists) {
+              allWithdrawals.push({
+                id: d.id,
+                uid: w.uid,
+                userEmail: w.userEmail || w.email || "—",
+                userName: w.userName || w.fullName || "—",
+                amount: w.amount || 0,
+                bankName: w.bankName || "—",
+                accountName: w.accountName || "—",
+                accountNumber: w.accountNumber || "—",
+                status: w.status || "pending",
+                fee: w.fee || 0,
+                total: w.total || w.amount || 0,
+                createdAt: w.createdAt || null,
+                processedAt: w.processedAt || null,
+                note: w.note || "",
+                isFromCollection: true
+              });
+            }
+          });
+        } catch (e) {
+          console.warn("No standalone withdrawals collection:", e.message);
+        }
+
+        // Sort by date (newest first)
+        allWithdrawals.sort((a, b) => {
+          const ta = a.createdAt?.seconds || a.createdAt?.toDate?.()?.getTime() / 1000 || 0;
+          const tb = b.createdAt?.seconds || b.createdAt?.toDate?.()?.getTime() / 1000 || 0;
+          return tb - ta;
+        });
+
+        updateCounts();
+        renderWithdrawals();
+      } catch (err) {
+        console.error("Load withdrawals error:", err);
+        toast("Failed to load withdrawals.", "error");
+      }
+    }
+
+    function updateCounts() {
+      const counts = { all: allWithdrawals.length, pending: 0, completed: 0, rejected: 0 };
+      allWithdrawals.forEach(w => {
+        const s = (w.status || "").toLowerCase();
+        if (s === "pending") counts.pending++;
+        if (s === "completed" || s === "approved") counts.completed++;
+        if (s === "rejected") counts.rejected++;
+      });
+      document.getElementById("countAll").textContent = counts.all;
+      document.getElementById("countPending").textContent = counts.pending;
+      document.getElementById("countCompleted").textContent = counts.completed;
+      document.getElementById("countRejected").textContent = counts.rejected;
+    }
+
+    // ── Render withdrawals ──
+    function renderWithdrawals() {
+      let filtered = allWithdrawals;
+      if (currentFilter !== "all") {
+        filtered = allWithdrawals.filter(w => {
+          const s = (w.status || "").toLowerCase();
+          if (currentFilter === "completed") return s === "completed" || s === "approved";
+          return s === currentFilter;
+        });
+      }
+
+      const tbody = document.getElementById("withdrawalsTableBody");
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr class="loading-row"><td colspan="8">No ${currentFilter === 'all' ? '' : currentFilter} withdrawals found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(w => {
+        const status = (w.status || "pending").toLowerCase();
+        const statusBadge = status === "completed" || status === "approved" ? "badge-completed" :
+          status === "rejected" ? "badge-rejected" : "badge-pending";
+        const statusLabel = status === "completed" || status === "approved" ? "Approved" :
+          status === "rejected" ? "Rejected" : "Pending";
+        const email = w.userEmail || "—";
+        const emailShort = email.length > 20 ? email.slice(0, 18) + "…" : email;
+        const isPending = status === "pending";
+        const bankShort = (w.bankName || "—").length > 15 ? (w.bankName || "—").slice(0, 13) + "…" : (w.bankName || "—");
+        const acctNameShort = (w.accountName || "—").length > 15 ? (w.accountName || "—").slice(0, 13) + "…" : (w.accountName || "—");
+
+        return `
+          <tr>
+            <td class="td-user" title="${email}">${emailShort}</td>
+            <td class="td-amount">₦${fmt(w.amount)}</td>
+            <td class="td-bank" title="${w.bankName || '—'}">${bankShort}</td>
+            <td title="${w.accountName || '—'}">${acctNameShort}</td>
+            <td>${w.accountNumber || "—"}</td>
+            <td>${fmtDate(w.createdAt)}</td>
+            <td><span class="badge-status ${statusBadge}">${statusLabel}</span></td>
+            <td>
+              <button class="btn-detail" onclick="viewDetail('${w.id}')">👁 Details</button>
+              ${isPending
+                ? `<button class="btn-approve" onclick="approveWithdrawal('${w.id}')" style="margin-left:4px">✅</button>
+                   <button class="btn-reject" onclick="openRejectModal('${w.id}')" style="margin-left:2px">❌</button>`
+                : ''}
+            </td>
+          </tr>`;
+      }).join("");
+    }
+
+    // ── Filter tabs ──
+    document.getElementById("filterTabs").addEventListener("click", function(e) {
+      if (e.target.classList.contains("filter-tab")) {
+        this.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+        e.target.classList.add("active");
+        currentFilter = e.target.dataset.filter;
+        renderWithdrawals();
+      }
+    });
+
+    // ── View detail ──
+    window.viewDetail = function(wId) {
+      const w = allWithdrawals.find(x => x.id === wId);
+      if (!w) return;
+
+      const status = (w.status || "pending").toLowerCase();
+      const statusLabel = status === "completed" || status === "approved" ? "Approved" : status === "rejected" ? "Rejected" : "Pending";
+
+      document.getElementById("detailContent").innerHTML = `
+        <div class="detail-row"><span class="dl">User</span><span class="dv">${w.userEmail || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Amount</span><span class="dv">₦${fmt(w.amount)}</span></div>
+        <div class="detail-row"><span class="dl">Fee</span><span class="dv">₦${fmt(w.fee)}</span></div>
+        <div class="detail-row"><span class="dl">Total (User Received)</span><span class="dv">₦${fmt(w.total || w.amount)}</span></div>
+        <div class="detail-row"><span class="dl">Bank Name</span><span class="dv">${w.bankName || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Account Name</span><span class="dv">${w.accountName || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Account Number</span><span class="dv">${w.accountNumber || "—"}</span></div>
+        <div class="detail-row"><span class="dl">Status</span><span class="dv">${statusLabel}</span></div>
+        <div class="detail-row"><span class="dl">Requested</span><span class="dv">${fmtDate(w.createdAt)}</span></div>
+        <div class="detail-row"><span class="dl">Processed</span><span class="dv">${fmtDate(w.processedAt)}</span></div>
+        ${w.note ? `<div class="detail-row"><span class="dl">Note</span><span class="dv">${w.note}</span></div>` : ''}
+      `;
+
+      document.getElementById("detailActions").innerHTML = status === "pending"
+        ? `<button class="btn-confirm-approve" onclick="approveFromDetail('${w.id}')">✅ Approve Withdrawal</button>
+           <button class="btn-confirm-reject" onclick="closeDetailModal(); openRejectModal('${w.id}')">❌ Reject & Refund</button>`
+        : `<button class="btn-cancel" onclick="closeDetailModal()">Close</button>`;
+
+      document.getElementById("detailModal").classList.add("open");
+    };
+
+    window.closeDetailModal = function() {
+      document.getElementById("detailModal").classList.remove("open");
+    };
+
+    window.approveFromDetail = async function(wId) {
+      closeDetailModal();
+      await approveWithdrawal(wId);
+    };
+
+    // ── Approve withdrawal ──
+    window.approveWithdrawal = async function(wId) {
+      if (!confirm("✅ Approve this withdrawal? This confirms the funds have been sent to the user.")) return;
+
+      const w = allWithdrawals.find(x => x.id === wId);
+      if (!w) return;
+
+      try {
+        const userRef = doc(db, "users", w.uid);
+
+        await runTransaction(db, async (transaction) => {
+          const userSnap = await transaction.get(userRef);
+          if (!userSnap.exists()) throw new Error("User not found");
+
+          const userData = userSnap.data();
+          const withdrawals = userData.withdrawals || [];
+
+          // Find and update the withdrawal in the array
+          const idx = withdrawals.findIndex(wd =>
+            wd.amount === w.amount && wd.bankName === w.bankName && wd.accountNumber === w.accountNumber
+          );
+
+          if (idx >= 0) {
+            withdrawals[idx].status = "completed";
+            withdrawals[idx].processedAt = new Date();
+          }
+
+          transaction.update(userRef, {
+            withdrawals: withdrawals,
+            updatedAt: serverTimestamp()
+          });
+        });
+
+        // Update standalone collection if exists
+        if (w.isFromCollection) {
+          try {
+            await updateDoc(doc(db, "withdrawals", w.id), {
+              status: "completed",
+              processedAt: serverTimestamp(),
+              reviewedBy: currentUser?.uid || "admin"
+            });
+          } catch (e) { /* Ignore */ }
+        }
+
+        // Add transaction record
+        await addDoc(collection(db, "transactions"), {
+          uid: w.uid,
+          type: "Withdrawal",
+          amount: w.amount,
+          method: "Bank Transfer",
+          bankName: w.bankName,
+          accountName: w.accountName,
+          accountNumber: w.accountNumber,
+          status: "Completed",
+          createdAt: serverTimestamp()
+        }).catch(() => {});
+
+        // Update local state
+        const idx = allWithdrawals.findIndex(x => x.id === wId);
+        if (idx >= 0) allWithdrawals[idx].status = "completed";
+        renderWithdrawals();
+        updateCounts();
+
+        toast("✅ Withdrawal approved!", "success");
+      } catch (err) {
+        console.error("Approve error:", err);
+        toast("Failed to approve: " + err.message, "error");
+      }
+    };
+
+    // ── Reject withdrawal ──
+    window.openRejectModal = function(wId) {
+      selectedWithdrawalId = wId;
+      document.getElementById("rejectReason").value = "";
+      document.getElementById("rejectModal").classList.add("open");
+    };
+
+    window.closeRejectModal = function() {
+      selectedWithdrawalId = null;
+      document.getElementById("rejectModal").classList.remove("open");
+    };
+
+    window.confirmReject = async function() {
+      if (!selectedWithdrawalId) return;
+      const reason = document.getElementById("rejectReason").value.trim();
+      if (!reason) {
+        toast("Please provide a rejection reason.", "error");
+        return;
+      }
+
+      const w = allWithdrawals.find(x => x.id === selectedWithdrawalId);
+      if (!w) return;
+
+      const btn = document.getElementById("confirmRejectBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Refunding…';
+
+      try {
+        const userRef = doc(db, "users", w.uid);
+
+        await runTransaction(db, async (transaction) => {
+          const userSnap = await transaction.get(userRef);
+          if (!userSnap.exists()) throw new Error("User not found");
+
+          const userData = userSnap.data();
+          const wallet = userData.wallet || {};
+          const currentBalance = wallet.balance || 0;
+          const withdrawals = userData.withdrawals || [];
+
+          // Refund the amount back to user's wallet
+          transaction.update(userRef, {
+            "wallet.balance": currentBalance + w.amount,
+            updatedAt: serverTimestamp()
+          });
+
+          // Update withdrawal status in array
+          const idx = withdrawals.findIndex(wd =>
+            wd.amount === w.amount && wd.bankName === w.bankName && wd.accountNumber === w.accountNumber
+          );
+          if (idx >= 0) {
+            withdrawals[idx].status = "rejected";
+            withdrawals[idx].note = reason;
+            withdrawals[idx].processedAt = new Date();
+          }
+
+          transaction.update(userRef, {
+            withdrawals: withdrawals
+          });
+        });
+
+        // Update standalone collection if exists
+        if (w.isFromCollection) {
+          try {
+            await updateDoc(doc(db, "withdrawals", w.id), {
+              status: "rejected",
+              processedAt: serverTimestamp(),
+              reviewedBy: currentUser?.uid || "admin",
+              note: reason
+            });
+          } catch (e) { /* Ignore */ }
+        }
+
+        // Add transaction record for refund
+        await addDoc(collection(db, "transactions"), {
+          uid: w.uid,
+          type: "Refund",
+          amount: w.amount,
+          method: "Bank Transfer",
+          status: "Completed",
+          note: `Rejected withdrawal refund: ${reason}`,
+          createdAt: serverTimestamp()
+        }).catch(() => {});
+
+        // Update local state
+        const idx = allWithdrawals.findIndex(x => x.id === selectedWithdrawalId);
+        if (idx >= 0) allWithdrawals[idx].status = "rejected";
+        renderWithdrawals();
+        updateCounts();
+        closeRejectModal();
+
+        toast("Withdrawal rejected & amount refunded to user.", "info");
+      } catch (err) {
+        console.error("Reject error:", err);
+        toast("Failed to reject: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Reject & Refund";
+      }
+    };
+
+    // Close modals on overlay click
+    document.getElementById("detailModal").addEventListener("click", function(e) {
+      if (e.target === this) closeDetailModal();
+    });
+    document.getElementById("rejectModal").addEventListener("click", function(e) {
+      if (e.target === this) closeRejectModal();
+    });
+
+    // ── Auth guard ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "admin-login.html";
+        return;
+      }
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (!snap.exists() || (snap.data().role !== "admin" && snap.data().role !== "superadmin")) {
+        await signOut(auth);
+        window.location.href = "admin-login.html";
+        return;
+      }
+
+      currentUser = user;
+      const data = snap.data();
+      document.getElementById("adminName").textContent = data.fullName || data.firstName || "Admin";
+      document.getElementById("adminRole").textContent = data.role === "superadmin" ? "Super Admin" : "Admin";
+      document.getElementById("avatarBtn").textContent = (data.fullName || data.email || "A").slice(0, 2).toUpperCase();
+
+      loadWithdrawals();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "admin-login.html";
+    });
+  </script>
+</body>
+</html>
