@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Sign In</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background-color: #0a1628;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px 60px;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: center;
+    }
+    .logo-wrap img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #0f1e35;
+      border-radius: 20px;
+      padding: 36px 28px 38px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.5);
+    }
+
+    .card h1 {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 10px;
+      line-height: 1.25;
+      color: #fff;
+    }
+
+    .card .subtitle {
+      font-size: 14px;
+      color: #8a9ab5;
+      text-align: center;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    /* ── Fields ── */
+    .field-group { display: flex; flex-direction: column; margin-bottom: 20px; }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+    label { font-size: 14px; color: #fff; font-weight: 600; }
+    .forgot-link {
+      font-size: 13px;
+      color: #8a9ab5;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .forgot-link:hover { color: #fff; }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: #162033;
+      border: 1.5px solid #1e2f4a;
+      border-radius: 50px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input::placeholder { color: #3d5070; }
+    input:focus { border-color: #2d7aed; }
+
+    /* ── Password toggle ── */
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 48px; }
+    .pw-toggle {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: #5a7090; display: flex; align-items: center;
+    }
+    .pw-toggle:hover { color: #8a9ab5; }
+
+    /* ── Remember me ── */
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .remember-row input[type="checkbox"] { display: none; }
+    .custom-check {
+      width: 20px; height: 20px;
+      border: 2px solid #2d7aed;
+      border-radius: 5px;
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+    .remember-row input[type="checkbox"]:checked + .custom-check {
+      background: #2d7aed;
+    }
+    .remember-row input[type="checkbox"]:checked + .custom-check::after {
+      content: '';
+      display: block;
+      width: 5px; height: 9px;
+      border: 2px solid #fff;
+      border-top: none; border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+    .remember-label { font-size: 14px; color: #c8d4e5; }
+
+    /* ── Button ── */
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: #2d7aed; color: #fff;
+      font-size: 15px; font-weight: 700;
+      border: none; border-radius: 50px; cursor: pointer;
+      transition: background .2s, opacity .2s;
+      letter-spacing: .3px;
+    }
+    .btn-submit:hover { background: #1a68d9; }
+    .btn-submit:disabled { opacity: .65; cursor: not-allowed; }
+
+    /* ── Register link ── */
+    .register-link {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      color: #8a9ab5;
+    }
+    .register-link a {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    /* ── Field error ── */
+    .field-error { font-size: 11.5px; color: #ef4444; margin-top: 5px; display: none; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 26px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a; color: #fff;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 13.5px; box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+      opacity: 0; z-index: 999; text-align: center; max-width: 320px; width: 90%;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid #22c55e; }
+    .toast.error   { border-left: 4px solid #ef4444; }
+    .toast.info    { border-left: 4px solid #2d7aed; }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle; margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="data.jpg" alt="DataCash" />
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <h1>Sign in to your account</h1>
+    <p class="subtitle">Access your DataCash dashboard and manage your earnings.</p>
+
+    <form id="loginForm" novalidate>
+
+      <!-- Email -->
+      <div class="field-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com"
+               autocomplete="email" inputmode="email" />
+        <span class="field-error" id="err-email">Enter a valid email address.</span>
+      </div>
+
+      <!-- Password -->
+      <div class="field-group">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+        </div>
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder="Your password"
+                 autocomplete="current-password" />
+          <button type="button" class="pw-toggle" aria-label="Show/hide password"
+                  onclick="togglePw(this)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <span class="field-error" id="err-password">Enter your password.</span>
+      </div>
+
+      <!-- Remember me -->
+      <label class="remember-row">
+        <input type="checkbox" id="rememberMe" checked />
+        <span class="custom-check"></span>
+        <span class="remember-label">Remember me</span>
+      </label>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Sign in</button>
+    </form>
+
+    <p class="register-link">Don't have an account? <a href="index.html">Create one</a></p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      setPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, updateDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    /* ─── Config ─────────────────────────────────────────── */
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    /* ─── Toast ──────────────────────────────────────────── */
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.innerHTML = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = "toast"; }, 4500);
+    }
+
+    /* ─── Field errors ───────────────────────────────────── */
+    function showErr(id) {
+      const el = document.getElementById("err-" + id);
+      if (el) el.style.display = "block";
+    }
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
+    }
+
+    /* ─── Password toggle ────────────────────────────────── */
+    window.togglePw = (btn) => {
+      const inp = document.getElementById("password");
+      const hide = inp.type === "password";
+      inp.type = hide ? "text" : "password";
+      btn.querySelector("svg").style.opacity = hide ? "0.35" : "1";
+    };
+
+    /* ─── Form submit ────────────────────────────────────── */
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const email    = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const remember = document.getElementById("rememberMe").checked;
+
+      let ok = true;
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr("email");    ok = false; }
+      if (!password)                                             { showErr("password"); ok = false; }
+      if (!ok) return;
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Signing in…';
+
+      try {
+        /* Set session persistence based on "Remember me" */
+        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+
+        /* Sign in */
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+
+        /* Update lastLoginAt — fire-and-forget, no await needed for UX */
+        updateDoc(doc(db, "users", cred.user.uid), {
+          lastLoginAt: serverTimestamp()
+        }).catch(() => {});
+
+        toast("✅ Welcome back! Redirecting…", "success");
+        setTimeout(() => { window.location.href = "dashboard.html"; }, 1800);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Sign in";
+
+        const MAP = {
+          "auth/user-not-found":        "No account found with this email. <a href='index.html' style='color:#93c5fd'>Create one</a>.",
+          "auth/wrong-password":        "Incorrect password. Try again or reset it.",
+          "auth/invalid-credential":    "Invalid email or password. Please check and retry.",
+          "auth/invalid-email":         "The email address is not valid.",
+          "auth/user-disabled":         "This account has been suspended. Contact support.",
+          "auth/too-many-requests":     "Too many failed attempts. Please wait before trying again.",
+          "auth/network-request-failed":"Network error. Check your connection and retry.",
+        };
+        toast(MAP[err.code] || `Error: ${err.message}`, "error");
+        console.error("[DataCash login]", err.code, err.message);
+      }
+    });
+  </script>
+</body>
+</html>
