@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Dashboard</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --card2: #0f2040;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --blue-dim: #1a3a6a;
+      --text: #ffffff;
+      --muted: #8a9ab5;
+      --green: #22c55e;
+      --gold: #f5c842;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ════════════════════════════════
+       SIDEBAR OVERLAY
+    ════════════════════════════════ */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      z-index: 100;
+    }
+    .overlay.open { display: block; }
+
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
+    .sidebar {
+      position: fixed;
+      top: 0; left: -280px;
+      width: 270px;
+      height: 100%;
+      background: #060d1a;
+      z-index: 200;
+      transition: left .28s cubic-bezier(.4,0,.2,1);
+      display: flex;
+      flex-direction: column;
+      padding: 0 0 30px;
+      overflow-y: auto;
+    }
+    .sidebar.open { left: 0; }
+
+    .sb-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 18px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sb-logo { display: flex; align-items: center; gap: 10px; }
+    .sb-logo img { width: 52px; height: 52px; object-fit: contain; }
+
+    .sb-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #1a2d4a;
+      border: none; cursor: pointer; color: #fff;
+      font-size: 18px; display: flex; align-items: center; justify-content: center;
+    }
+
+    .sb-section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+      color: var(--muted); padding: 22px 20px 10px; text-transform: uppercase;
+    }
+
+    .sb-nav { list-style: none; padding: 0 12px; }
+    .sb-nav li { margin-bottom: 4px; }
+    .sb-nav a {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 14px; border-radius: 12px;
+      color: #c8d4e5; font-size: 15px; font-weight: 500;
+      text-decoration: none; transition: background .15s, color .15s;
+    }
+    .sb-nav a:hover { background: #0d1b30; color: #fff; }
+    .sb-nav a.active {
+      background: #0d2a5a;
+      color: var(--blue);
+      border-left: 3px solid var(--blue);
+    }
+    .sb-nav a .icon {
+      width: 38px; height: 38px;
+      background: #0d1b30; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .sb-nav a.active .icon { background: #1a3a6a; }
+
+    .sb-logout {
+      margin: auto 12px 0;
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 14px; border-radius: 12px;
+      color: #ef4444; font-size: 15px; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      border: none; background: none; width: calc(100% - 24px);
+      margin-top: 24px;
+    }
+    .sb-logout:hover { background: #1a0d0d; }
+    .sb-logout .icon {
+      width: 38px; height: 38px;
+      background: #1a0d0d; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+
+    /* ════════════════════════════════
+       TOP NAV
+    ════════════════════════════════ */
+    .topbar {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      position: sticky; top: 0;
+      background: var(--bg);
+      z-index: 50;
+      border-bottom: 1px solid #0d1b30;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    .btn-menu {
+      width: 42px; height: 42px;
+      background: #0d1b30; border: none; border-radius: 12px;
+      cursor: pointer; color: #fff; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+    .btn-notif {
+      width: 42px; height: 42px;
+      background: #0d1b30; border: 1px solid var(--border);
+      border-radius: 50%; cursor: pointer; color: #fff; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; text-decoration: none;
+    }
+    .notif-dot {
+      position: absolute; top: 8px; right: 9px;
+      width: 8px; height: 8px;
+      background: var(--blue); border-radius: 50%;
+      border: 1.5px solid var(--bg);
+    }
+
+    .btn-avatar {
+      width: 42px; height: 42px;
+      background: var(--blue-dim);
+      border: 1px solid var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff;
+      text-decoration: none; cursor: pointer;
+    }
+
+    /* ════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════ */
+    .main { padding: 20px 16px 100px; max-width: 480px; margin: 0 auto; }
+
+    /* Greeting */
+    .greeting h2 { font-size: 26px; font-weight: 800; }
+    .greeting p  { font-size: 14px; color: var(--muted); margin-top: 3px; }
+
+    /* Stats pills */
+    .pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin: 14px 0 22px;
+    }
+    .pill {
+      padding: 6px 13px; border-radius: 50px;
+      font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border);
+      color: #c8d4e5;
+    }
+    .pill.blue { border-color: var(--blue); color: var(--blue); background: #0d1b30; }
+    .pill.dark { background: #0d1b30; }
+
+    /* ── Wallet Cards ── */
+    .wallet-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 22px 20px 20px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .wc-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
+    }
+    .wc-amount {
+      font-size: 34px; font-weight: 800; margin-bottom: 4px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .wc-amount .naira { font-size: 28px; }
+    .wc-sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .wc-sub .data-rate { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .wc-icon-btn {
+      position: absolute; top: 20px; right: 20px;
+      width: 42px; height: 42px;
+      background: #1a2d4a; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; border: none; cursor: pointer; color: #fff;
+      text-decoration: none;
+    }
+
+    .btn-card {
+      width: 100%; padding: 14px;
+      border-radius: 50px;
+      font-size: 15px; font-weight: 600;
+      border: none; cursor: pointer;
+      transition: opacity .2s, background .2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-card.blue { background: var(--blue); color: #fff; }
+    .btn-card.blue:hover { background: #1a68d9; }
+    .btn-card.dark { background: #14253d; color: #fff; }
+    .btn-card.dark:hover { background: #1a2d4a; }
+
+    .close-deal-note {
+      font-size: 12px; color: var(--muted); margin-top: 10px; text-align: center;
+    }
+    .close-deal-note strong { color: #fff; }
+
+    /* ── Action buttons (big row) ── */
+    .action-btn {
+      width: 100%; padding: 17px;
+      border-radius: 14px; margin-bottom: 12px;
+      font-size: 16px; font-weight: 600;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      text-decoration: none; transition: opacity .2s, filter .2s;
+    }
+    .action-btn.blue  { background: var(--blue); color: #fff; }
+    .action-btn.blue:hover { filter: brightness(1.1); }
+    .action-btn.dark  { background: var(--card); color: #fff; border: 1px solid var(--border); }
+    .action-btn.dark:hover { background: #1a2d4a; }
+    .action-btn.teal  { background: #0d2a5a; color: var(--blue); border: 1px solid #1a3a6a; }
+    .action-btn.teal:hover { background: #1a3a6a; }
+
+    /* ── Recent activity ── */
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .section-header h3 { font-size: 17px; font-weight: 700; }
+    .section-header a  { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .section-header a:hover { color: #fff; }
+
+    .activity-table {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .activity-table table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+    .activity-table th {
+      padding: 12px 14px; text-align: left;
+      color: var(--muted); font-weight: 600; font-size: 12px;
+      border-bottom: 1px solid var(--border);
+      background: #0a1628;
+    }
+    .activity-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #0d1b30;
+      vertical-align: middle;
+    }
+    .activity-table tr:last-child td { border-bottom: none; }
+    .activity-table .amt-pos { color: #22c55e; font-weight: 700; }
+    .activity-table .amt-neg { color: #ef4444; font-weight: 700; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px; border-radius: 50px;
+      font-size: 11px; font-weight: 600;
+    }
+    .badge.initiated { background: #1a2d4a; color: #93c5fd; }
+    .badge.success   { background: #052e16; color: #22c55e; }
+    .badge.pending   { background: #2d1a00; color: #f5c842; }
+    .badge.failed    { background: #1a0000; color: #ef4444; }
+
+    .empty-activity {
+      text-align: center; padding: 36px 20px;
+      color: var(--muted); font-size: 14px;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 26px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a; color: #fff;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 13.5px; box-shadow: 0 4px 20px rgba(0,0,0,.5);
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+      opacity: 0; z-index: 999; text-align: center; max-width: 320px; width: 90%;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid #22c55e; }
+    .toast.error   { border-left: 4px solid #ef4444; }
+    .toast.info    { border-left: 4px solid var(--blue); }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block; width: 36px; height: 36px;
+      border: 3px solid rgba(255,255,255,.15);
+      border-top-color: var(--blue); border-radius: 50%;
+      animation: spin .7s linear infinite; margin: 60px auto; display: block;
+    }
+
+    /* ── Loading screen ── */
+    #loadingScreen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    #loadingScreen img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px; }
+    #loadingScreen p { color: var(--muted); font-size: 14px; }
+
+    /* WhatsApp FAB */
+    .whatsapp-fab {
+      position: fixed; bottom: 24px; right: 20px;
+      width: 52px; height: 52px;
+      background: #25d366; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(37,211,102,.4);
+      z-index: 90; transition: transform .2s;
+    }
+    .whatsapp-fab:hover { transform: scale(1.08); }
+
+    @media (min-width: 480px) {
+      .main { padding: 24px 24px 100px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loadingScreen">
+  <img src="data.jpg" alt="DataCash" />
+  <div class="spinner" style="width:32px;height:32px;margin:0"></div>
+  <p style="margin-top:14px">Loading your dashboard…</p>
+</div>
+
+<!-- Sidebar overlay -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <img src="data.jpg" alt="DataCash" />
+    </div>
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+  </div>
+
+  <div class="sb-section-label">Overview</div>
+  <ul class="sb-nav">
+    <li>
+      <a href="dashboard.html" class="active">
+        <span class="icon">⊞</span> Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="deposits.html">
+        <span class="icon">↓</span> Deposits
+      </a>
+    </li>
+    <li>
+      <a href="withdrawals.html">
+        <span class="icon">↑</span> Withdrawals
+      </a>
+    </li>
+    <li>
+      <a href="redeem-data.html">
+        <span class="icon">🎁</span> Redeem Data
+      </a>
+    </li>
+  </ul>
+
+  <div class="sb-section-label">Account</div>
+  <ul class="sb-nav">
+    <li>
+      <a href="profile.html">
+        <span class="icon">👤</span> Profile
+      </a>
+    </li>
+    <li>
+      <a href="referrals.html">
+        <span class="icon">👥</span> Referrals
+      </a>
+    </li>
+    <li>
+      <a href="settings.html">
+        <span class="icon">⚙️</span> Settings
+      </a>
+    </li>
+    <li>
+      <a href="2fa.html">
+        <span class="icon">🛡️</span> 2FA
+      </a>
+    </li>
+  </ul>
+
+  <button class="sb-logout" id="logoutBtn">
+    <span class="icon">🚪</span> Sign out
+  </button>
+</nav>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="btn-menu" onclick="openSidebar()">☰</button>
+  </div>
+  <div class="topbar-right">
+    <a href="notifications.html" class="btn-notif">
+      🔔<span class="notif-dot"></span>
+    </a>
+    <a href="profile.html" class="btn-avatar" id="avatarBtn">??</a>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main class="main" id="mainContent" style="display:none">
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <h2>Dashboard</h2>
+    <p id="welcomeMsg">Welcome back!</p>
+  </div>
+
+  <!-- Info pills -->
+  <div class="pills">
+    <span class="pill blue">Daily Interest: 5%</span>
+    <span class="pill">Min Deposit: ₦10,000</span>
+    <span class="pill dark">Min Withdrawal: ₦2,000</span>
+    <span class="pill dark">Close deal: 5 days</span>
+  </div>
+
+  <!-- FREE DATA WALLET -->
+  <div class="wallet-card">
+    <div class="wc-label">Free Data Wallet</div>
+    <div class="wc-amount"><span id="dataMB">0</span> <span style="font-size:18px;color:var(--muted)">MB</span></div>
+    <div class="wc-sub">
+      ₦10,000 = 500MB &bull; MTN / Airtel / Glo
+    </div>
+    <a href="redeem-data.html" class="wc-icon-btn" title="Redeem Data">🎁</a>
+    <a href="redeem-data.html" class="btn-card blue">Redeem data</a>
+  </div>
+
+  <!-- AVAILABLE BALANCE -->
+  <div class="wallet-card">
+    <div class="wc-label">Available Balance</div>
+    <div class="wc-amount">₦<span id="balanceAmt">0</span></div>
+    <div class="wc-sub">Withdrawable (Bank Transfer)</div>
+    <a href="withdrawals.html" class="wc-icon-btn" title="Wallet">💼</a>
+    <a href="withdrawals.html" class="btn-card blue">Withdraw</a>
+  </div>
+
+  <!-- YIELDING WALLET -->
+  <div class="wallet-card">
+    <div class="wc-label">Yielding Wallet</div>
+    <div class="wc-amount">₦<span id="yieldAmt">0</span></div>
+    <div class="wc-sub" style="display:flex;align-items:center;gap:6px">
+      <span>✦</span> Deal running (locked)
+    </div>
+    <a href="deposits.html" class="wc-icon-btn" title="Growth">📈</a>
+    <a href="deposits.html" class="btn-card dark" style="margin-bottom:10px">
+      <span>⊗</span> Close deal
+    </a>
+    <p class="close-deal-note">Close deal becomes available after <strong>5 days</strong>.</p>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <a href="deposits.html"   class="action-btn blue">↓ &nbsp;Deposit</a>
+  <a href="withdrawals.html" class="action-btn dark">↑ &nbsp;Withdraw</a>
+  <a href="redeem-data.html" class="action-btn teal">🎁 &nbsp;Redeem Data</a>
+  <a href="referrals.html"   class="action-btn dark">✦ &nbsp;Referrals</a>
+
+  <!-- RECENT ACTIVITY -->
+  <div class="section-header" style="margin-top:28px">
+    <h3>Recent activity</h3>
+    <a href="transactions.html">View all</a>
+  </div>
+
+  <div class="activity-table" id="activityTable">
+    <div class="empty-activity" id="emptyActivity">
+      <p>No transactions yet.</p>
+    </div>
+    <table id="txTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="txBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<a href="https://wa.me/2348000000000" target="_blank" class="whatsapp-fab" title="Chat support">💬</a>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc,
+    collection, query, where, orderBy, limit, getDocs
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const app  = initializeApp({
+    apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+    authDomain: "datacash-104dd.firebaseapp.com",
+    projectId: "datacash-104dd",
+    storageBucket: "datacash-104dd.firebasestorage.app",
+    messagingSenderId: "101692098149",
+    appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+  });
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  /* ── Helpers ─────────────────────────────────────────── */
+  function fmt(n) {
+    return Number(n || 0).toLocaleString("en-NG");
+  }
+  function toast(msg, type = "info") {
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.className = `toast ${type} show`;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = "toast"; }, 4000);
+  }
+  function initials(name) {
+    if (!name) return "U";
+    return name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+  }
+  function fmtDate(ts) {
+    if (!ts) return "–";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+  }
+  function badgeClass(status) {
+    const s = (status || "").toLowerCase();
+    if (s === "success" || s === "completed") return "success";
+    if (s === "pending") return "pending";
+    if (s === "failed")  return "failed";
+    return "initiated";
+  }
+
+  /* ── Auth guard ──────────────────────────────────────── */
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    /* Fetch user doc */
+    let userData = {};
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) userData = snap.data();
+    } catch (e) { console.warn("User doc fetch failed", e); }
+
+    const firstName = userData.firstName || user.displayName?.split(" ")[0] || "User";
+    const fullName  = userData.fullName  || user.displayName || "User";
+
+    /* Update UI */
+    document.getElementById("welcomeMsg").textContent = `Welcome back, ${firstName}`;
+    document.getElementById("avatarBtn").textContent  = initials(fullName);
+
+    const wallet = userData.wallet || {};
+    document.getElementById("balanceAmt").textContent = fmt(wallet.balance);
+    document.getElementById("yieldAmt").textContent   = fmt(wallet.totalEarned);
+    document.getElementById("dataMB").textContent     = fmt(userData.dataMB || 0);
+
+    /* Load last 5 transactions */
+    try {
+      const txRef = collection(db, "transactions");
+      const q     = query(txRef, where("uid", "==", user.uid), limit(5));
+      const txSnap = await getDocs(q);
+
+      if (!txSnap.empty) {
+        const rows = [];
+        txSnap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+        // Sort client-side (avoids composite index requirement)
+        rows.sort((a, b) => {
+          const ta = a.createdAt?.seconds || 0;
+          const tb = b.createdAt?.seconds || 0;
+          return tb - ta;
+        });
+
+        const tbody = document.getElementById("txBody");
+        tbody.innerHTML = "";
+        rows.forEach(tx => {
+          const sign  = (tx.type || "").toLowerCase() === "withdrawal" ? "-" : "+";
+          const color = sign === "+" ? "amt-pos" : "amt-neg";
+          tbody.innerHTML += `
+            <tr>
+              <td>${fmtDate(tx.createdAt)}</td>
+              <td style="text-transform:capitalize">${tx.type || "–"}</td>
+              <td class="${color}">${sign}₦${fmt(tx.amount)}</td>
+              <td><span class="badge ${badgeClass(tx.status)}">${tx.status || "Initiated"}</span></td>
+            </tr>`;
+        });
+        document.getElementById("txTable").style.display = "table";
+        document.getElementById("emptyActivity").style.display = "none";
+      }
+    } catch (e) { console.warn("Transactions fetch failed", e); }
+
+    /* Show dashboard */
+    document.getElementById("loadingScreen").style.display = "none";
+    document.getElementById("mainContent").style.display   = "block";
+  });
+
+  /* ── Logout ──────────────────────────────────────────── */
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "login.html";
+    } catch (e) { toast("Sign out failed. Try again.", "error"); }
+  });
+
+  /* ── Sidebar ─────────────────────────────────────────── */
+  window.openSidebar  = () => {
+    document.getElementById("sidebar").classList.add("open");
+    document.getElementById("overlay").classList.add("open");
+  };
+  window.closeSidebar = () => {
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("overlay").classList.remove("open");
+  };
+</script>
+</body>
+</html>
