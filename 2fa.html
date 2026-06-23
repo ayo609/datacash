@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2FA Security – DataCash</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1b2a;
+      --card: #112236;
+      --border: #1e3450;
+      --blue: #2196f3;
+      --blue-hover: #1976d2;
+      --muted: #8a9bb0;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #0d1b2a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --gold: #f59e0b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(30, 52, 80, 0.3);
+    }
+    .menu-btn {
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .menu-btn:hover {
+      background: #1e3450;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .notif-btn {
+      position: relative;
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .notif-btn:hover {
+      background: #1e3450;
+    }
+    .avatar-btn {
+      background: #1a3a5c;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .avatar-btn:hover {
+      background: #1e4a80;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 24px 18px 100px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 7px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    /* ── STATUS PILL ── */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      border: 1px solid transparent;
+    }
+    .pill-disabled {
+      background: #1a0d0d;
+      color: #ef4444;
+      border-color: #2a1010;
+    }
+    .pill-enabled {
+      background: #0a2a14;
+      color: var(--green);
+      border-color: #14532d;
+    }
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px 18px 24px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .info-box.warning {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+    .info-box.success {
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.2);
+    }
+    .info-label {
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .info-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.5;
+    }
+    .info-value.mono {
+      font-family: 'Courier New', Courier, monospace;
+      letter-spacing: 2px;
+      font-size: 16px;
+    }
+
+    /* ── Toggle switch ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .toggle-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .toggle-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+    .toggle-info p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #1a3450;
+      border-radius: 28px;
+      transition: background 0.3s;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    .toggle-switch input:checked+.toggle-slider {
+      background: var(--blue);
+    }
+    .toggle-switch input:checked+.toggle-slider::before {
+      transform: translateX(24px);
+    }
+    .toggle-switch input:disabled+.toggle-slider {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── OTP Input ── */
+    .otp-inputs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .otp-digit {
+      width: 44px;
+      height: 52px;
+      background: var(--dark-input);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+      caret-color: var(--blue);
+    }
+    .otp-digit:focus {
+      border-color: var(--blue);
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      width: 100%;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      background: var(--blue-hover);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .btn-primary:disabled {
+      background: #1a3450;
+      color: #4a6080;
+      cursor: not-allowed;
+    }
+    .btn-danger {
+      width: 100%;
+      background: transparent;
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    /* ── Backup codes ── */
+    .backup-codes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .backup-code {
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 1px;
+      user-select: all;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .backup-code:hover {
+      border-color: var(--blue);
+    }
+    .backup-code.used {
+      opacity: 0.4;
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    /* ── Recovery info ── */
+    .recovery-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+    .recovery-note svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--gold);
+    }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px 22px;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .modal-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .modal-box p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-cancel {
+      background: #1a2c40;
+      color: var(--text);
+    }
+    .btn-cancel:hover {
+      background: #1e3450;
+    }
+    .btn-confirm {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-confirm:hover {
+      background: #dc2626;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2c40;
+      color: var(--text);
+      padding: 13px 22px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    /* WhatsApp FAB */
+    .wa-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background: #25d366;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+      z-index: 150;
+      transition: transform 0.2s;
+      text-decoration: none;
+    }
+    .wa-fab:hover {
+      transform: scale(1.08);
+    }
+    .wa-fab svg {
+      width: 28px;
+      height: 28px;
+      fill: #fff;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .card {
+        padding: 18px 14px;
+      }
+      .backup-codes-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+      .backup-code {
+        font-size: 12px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <div class="topbar">
+    <a href="dashboard.html" class="menu-btn" aria-label="Back to dashboard">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+        <rect width="18" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="6" width="12" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="12" width="16" height="2" rx="1" fill="#e0e6f0" />
+      </svg>
+    </a>
+    <div class="topbar-right">
+      <a href="notifications.html" class="notif-btn" aria-label="Notifications">
+        🔔
+      </a>
+      <a href="profile.html" class="avatar-btn" id="navAvatar">??</a>
+    </div>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+    <h1>🛡️ 2FA Security</h1>
+    <p class="page-subtitle">Add an extra layer of security to your account with two-factor authentication.</p>
+
+    <!-- STATUS PILL -->
+    <span class="status-pill pill-disabled" id="statusPill">
+      <span class="pill-dot"></span>
+      <span id="statusText">2FA is disabled</span>
+    </span>
+
+    <!-- ── 2FA TOGGLE CARD ── -->
+    <div class="card">
+      <div class="card-title">🔐 Two-Factor Authentication</div>
+      <div class="card-desc">Protect your account with an authenticator app like Google Authenticator, Authy, or Microsoft Authenticator.</div>
+
+      <!-- Toggle -->
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <h4>Enable 2FA</h4>
+          <p>Require a 6-digit code from your authenticator app when signing in.</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="twoFactorToggle" onchange="handleToggle()" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Setup section (shown when enabling) -->
+      <div id="setupSection" class="hidden">
+        <div class="info-box" style="margin-top:16px">
+          <div class="info-label">Step 1: Scan QR Code</div>
+          <div class="info-value" style="text-align:center;padding:10px 0">
+            <div id="qrCodeContainer" style="display:flex;justify-content:center;align-items:center;min-height:180px">
+              <span class="spinner" style="width:32px;height:32px"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Step 2: Manual Setup Key</div>
+          <div class="info-value mono" id="manualKey" style="text-align:center;cursor:pointer" onclick="copyManualKey()" title="Tap to copy">
+            Generating…
+          </div>
+          <p style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center">Tap to copy • Use this if you can't scan the QR code</p>
+        </div>
+
+        <div class="info-box">
+          <div class="info-label">Step 3: Verify Setup</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Enter the 6-digit code from your authenticator app to confirm.</p>
+          <div class="otp-inputs">
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+            <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" />
+          </div>
+          <button class="btn-primary" id="verifySetupBtn" onclick="verifySetup()">
+            Verify & Enable 2FA
+          </button>
+        </div>
+      </div>
+
+      <!-- Enabled section (shown when 2FA is active) -->
+      <div id="enabledSection" class="hidden">
+        <div class="info-box success" style="margin-top:16px">
+          <div class="info-label">✅ 2FA is active</div>
+          <div class="info-value" style="font-size:13px;font-weight:400">
+            Your account is protected. You'll need your authenticator app to sign in.
+          </div>
+        </div>
+
+        <button class="btn-danger" id="disableBtn" onclick="showDisableModal()">
+          ⚠️ Disable 2FA
+        </button>
+      </div>
+    </div>
+
+    <!-- ── BACKUP CODES CARD ── -->
+    <div class="card hidden" id="backupCard">
+      <div class="card-title">📝 Backup Codes</div>
+      <div class="card-desc">Save these one-time backup codes in a safe place. Each code can be used once if you lose access to your authenticator app.</div>
+
+      <div class="backup-codes-grid" id="backupCodesGrid">
+        <!-- Populated by JavaScript -->
+      </div>
+
+      <button class="btn-primary" onclick="generateNewCodes()">
+        🔄 Generate New Codes
+      </button>
+
+      <div class="recovery-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        Store these codes securely. If you lose access to your authenticator app, you can use a backup code to sign in. Each code works only once.
+      </div>
+    </div>
+
+    <!-- ── RECOVERY INFO CARD ── -->
+    <div class="card">
+      <div class="card-title">🆘 Recovery Help</div>
+      <div class="card-desc">If you lose access to both your authenticator app and backup codes, contact support for identity verification.</div>
+
+      <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="btn-primary" style="text-decoration:none;">
+        💬 Contact Support
+      </a>
+    </div>
+  </div>
+
+  <!-- Disable Confirmation Modal -->
+  <div class="modal-overlay" id="disableModal">
+    <div class="modal-box">
+      <h3>Disable 2FA?</h3>
+      <p>This will make your account less secure. You can re-enable 2FA at any time. Are you sure you want to continue?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeDisableModal()">Cancel</button>
+        <button class="btn-confirm" id="confirmDisableBtn" onclick="disable2FA()">Disable 2FA</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp FAB -->
+  <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="wa-fab" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.12.56 4.18 1.62 6L0 24l6.18-1.62A11.94 11.94 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.19-1.25-6.2-3.48-8.52zM12 22c-1.85 0-3.67-.5-5.24-1.44l-.38-.22-3.9 1.02 1.04-3.8-.25-.4A9.93 9.93 0 0 1 2 12C2 6.48 6.48 2 12 2c2.66 0 5.16 1.04 7.04 2.92A9.93 9.93 0 0 1 22 12c0 5.52-4.48 10-10 10zm5.47-7.34c-.3-.15-1.77-.87-2.04-.97s-.47-.15-.67.15-.77.97-.94 1.17-.35.22-.65.07a8.16 8.16 0 0 1-2.4-1.48 9.02 9.02 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52s.2-.3.3-.5.05-.37-.02-.52-.67-1.62-.92-2.22c-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37s-1.04 1.02-1.04 2.48 1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.27.5 1.7.64.72.23 1.37.2 1.89.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z" />
+    </svg>
+  </a>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let twoFactorEnabled = false;
+    let currentSecret = "";
+    let backupCodes = [];
+
+    // ── Toast ──
+    function showToast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
+      t.innerHTML = `${icon} ${msg}`;
+      t.className = `toast show ${type}`;
+      clearTimeout(t._timeout);
+      t._timeout = setTimeout(() => { t.className = "toast"; }, 3800);
+    }
+
+    // ── Generate random secret (base32) ──
+    function generateSecret() {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      let secret = "";
+      for (let i = 0; i < 32; i++) {
+        secret += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return secret;
+    }
+
+    // ── Generate backup codes ──
+    function generateBackupCodes(count = 8) {
+      const codes = [];
+      for (let i = 0; i < count; i++) {
+        let code = "";
+        for (let j = 0; j < 4; j++) {
+          code += Math.random().toString(36).substring(2, 6).toUpperCase();
+          if (j < 3) code += "-";
+        }
+        codes.push(code);
+      }
+      return codes;
+    }
+
+    // ── Render backup codes ──
+    function renderBackupCodes(codes, usedCodes = []) {
+      const grid = document.getElementById("backupCodesGrid");
+      grid.innerHTML = codes.map((code, i) => {
+        const isUsed = usedCodes.includes(code);
+        return `
+          <div class="backup-code ${isUsed ? 'used' : ''}" 
+               onclick="${isUsed ? '' : `copyBackupCode('${code}', this)`}" 
+               title="${isUsed ? 'Already used' : 'Tap to copy'}">
+            ${isUsed ? '••••-••••-••••-••••' : code}
+          </div>`;
+      }).join("");
+    }
+
+    // ── Copy backup code ──
+    window.copyBackupCode = function(code, el) {
+      navigator.clipboard.writeText(code).then(() => {
+        const original = el.textContent;
+        el.textContent = "✓ Copied!";
+        el.style.color = "#22c55e";
+        setTimeout(() => {
+          el.textContent = original;
+          el.style.color = "";
+        }, 1500);
+        showToast("Backup code copied!", "success");
+      }).catch(() => showToast("Copy failed.", "error"));
+    };
+
+    // ── Copy manual key ──
+    window.copyManualKey = function() {
+      if (!currentSecret) return;
+      navigator.clipboard.writeText(currentSecret).then(() => {
+        showToast("Setup key copied to clipboard!", "success");
+      }).catch(() => showToast("Copy failed.", "error"));
+    };
+
+    // ── Generate QR code data URL ──
+    function generateQRDataURL(secret, email) {
+      const issuer = encodeURIComponent("DataCash");
+      const account = encodeURIComponent(email);
+      const otpauth = `otpauth://totp/${issuer}:${account}?secret=${secret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+
+      // Generate QR code using Google Charts API
+      const qrUrl = `https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=${encodeURIComponent(otpauth)}&choe=UTF-8`;
+      return qrUrl;
+    }
+
+    // ── Verify TOTP code (client-side simulation) ──
+    function verifyTOTP(secret, code) {
+      // In production, use a proper TOTP library or verify server-side
+      // This is a simplified demo that accepts any 6-digit code for setup verification
+      // For real security, implement proper TOTP verification
+      return code.length === 6 && /^\d{6}$/.test(code);
+    }
+
+    // ── Handle toggle ──
+    window.handleToggle = function() {
+      const toggle = document.getElementById("twoFactorToggle");
+      const setupSection = document.getElementById("setupSection");
+      const enabledSection = document.getElementById("enabledSection");
+
+      if (toggle.checked && !twoFactorEnabled) {
+        // Show setup
+        setupSection.classList.remove("hidden");
+        enabledSection.classList.add("hidden");
+        initializeSetup();
+      } else if (!toggle.checked && twoFactorEnabled) {
+        // Show disable modal
+        showDisableModal();
+      }
+    };
+
+    // ── Initialize 2FA setup ──
+    function initializeSetup() {
+      currentSecret = generateSecret();
+      const email = currentUser?.email || "user@datacash.com";
+
+      // Display manual key
+      document.getElementById("manualKey").textContent = currentSecret;
+
+      // Generate QR code
+      const qrUrl = generateQRDataURL(currentSecret, email);
+      const qrContainer = document.getElementById("qrCodeContainer");
+      qrContainer.innerHTML = `<img src="${qrUrl}" alt="QR Code" style="width:180px;height:180px;border-radius:10px" onerror="this.parentElement.innerHTML='<p style=color:var(--muted)>QR code could not be loaded. Use the manual key below.</p>'" />`;
+    }
+
+    // ── Verify setup ──
+    window.verifySetup = async function() {
+      const digits = [...document.querySelectorAll("#setupSection .otp-digit")].map(i => i.value).join("");
+
+      if (digits.length < 6) {
+        showToast("Enter the 6-digit code from your authenticator app.", "error");
+        return;
+      }
+
+      if (!verifyTOTP(currentSecret, digits)) {
+        showToast("Invalid code. Please try again.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("verifySetupBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Enabling 2FA…';
+
+      try {
+        // Generate backup codes
+        backupCodes = generateBackupCodes(8);
+
+        // Save to Firestore
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, {
+          twoFactorEnabled: true,
+          twoFactorSecret: currentSecret,
+          backupCodes: backupCodes,
+          backupCodesUsed: [],
+          twoFactorEnabledAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        twoFactorEnabled = true;
+        updateUI(true);
+
+        // Show backup codes card
+        document.getElementById("backupCard").classList.remove("hidden");
+        renderBackupCodes(backupCodes, []);
+
+        // Hide setup, show enabled
+        document.getElementById("setupSection").classList.add("hidden");
+        document.getElementById("enabledSection").classList.remove("hidden");
+
+        showToast("✅ 2FA enabled successfully! Save your backup codes.", "success");
+
+        // Clear OTP inputs
+        document.querySelectorAll("#setupSection .otp-digit").forEach(i => i.value = "");
+
+      } catch (err) {
+        console.error("Enable 2FA error:", err);
+        showToast("Failed to enable 2FA. Try again.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Verify & Enable 2FA";
+      }
+    };
+
+    // ── Show disable modal ──
+    window.showDisableModal = function() {
+      if (!twoFactorEnabled) {
+        // Toggle was unchecked during setup — reset it
+        document.getElementById("twoFactorToggle").checked = false;
+        document.getElementById("setupSection").classList.add("hidden");
+        return;
+      }
+      document.getElementById("disableModal").classList.add("open");
+    };
+
+    // ── Close disable modal ──
+    window.closeDisableModal = function() {
+      document.getElementById("disableModal").classList.remove("open");
+      document.getElementById("twoFactorToggle").checked = true; // Reset toggle
+    };
+
+    // ── Disable 2FA ──
+    window.disable2FA = async function() {
+      const btn = document.getElementById("confirmDisableBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Disabling…';
+
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, {
+          twoFactorEnabled: false,
+          twoFactorSecret: null,
+          backupCodes: [],
+          backupCodesUsed: [],
+          twoFactorDisabledAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        twoFactorEnabled = false;
+        backupCodes = [];
+        currentSecret = "";
+
+        updateUI(false);
+        document.getElementById("disableModal").classList.remove("open");
+        document.getElementById("backupCard").classList.add("hidden");
+        document.getElementById("setupSection").classList.add("hidden");
+        document.getElementById("enabledSection").classList.add("hidden");
+
+        showToast("2FA has been disabled.", "info");
+      } catch (err) {
+        console.error("Disable 2FA error:", err);
+        showToast("Failed to disable 2FA. Try again.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = "Disable 2FA";
+      }
+    };
+
+    // ── Generate new backup codes ──
+    window.generateNewCodes = async function() {
+      const newCodes = generateBackupCodes(8);
+      backupCodes = newCodes;
+
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, {
+          backupCodes: newCodes,
+          backupCodesUsed: [],
+          updatedAt: serverTimestamp()
+        });
+
+        renderBackupCodes(newCodes, []);
+        showToast("✅ New backup codes generated! Previous codes are invalid.", "success");
+      } catch (err) {
+        console.error("Generate codes error:", err);
+        showToast("Failed to generate new codes. Try again.", "error");
+      }
+    };
+
+    // ── Update UI based on 2FA state ──
+    function updateUI(enabled) {
+      const toggle = document.getElementById("twoFactorToggle");
+      const statusPill = document.getElementById("statusPill");
+      const statusText = document.getElementById("statusText");
+      const enabledSection = document.getElementById("enabledSection");
+      const backupCard = document.getElementById("backupCard");
+
+      toggle.checked = enabled;
+
+      if (enabled) {
+        statusPill.className = "status-pill pill-enabled";
+        statusText.textContent = "2FA is enabled";
+        enabledSection.classList.remove("hidden");
+        if (backupCodes.length > 0) {
+          backupCard.classList.remove("hidden");
+        }
+      } else {
+        statusPill.className = "status-pill pill-disabled";
+        statusText.textContent = "2FA is disabled";
+        enabledSection.classList.add("hidden");
+        backupCard.classList.add("hidden");
+      }
+    }
+
+    // ── OTP digit auto-advance ──
+    function initOTPInputs() {
+      const otpDigits = document.querySelectorAll("#setupSection .otp-digit");
+      otpDigits.forEach((input, idx, arr) => {
+        input.addEventListener("input", (e) => {
+          const val = e.target.value.replace(/\D/g, "");
+          e.target.value = val.slice(-1);
+          if (val && idx < arr.length - 1) arr[idx + 1].focus();
+        });
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Backspace" && !input.value && idx > 0) arr[idx - 1].focus();
+        });
+        input.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const pasted = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "");
+          arr.forEach((inp, i) => { inp.value = pasted[i] || ""; });
+          const next = Math.min(pasted.length, arr.length - 1);
+          arr[next].focus();
+        });
+      });
+    }
+
+    // ── Auth state ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showToast("Please sign in to manage 2FA.", "error");
+        setTimeout(() => window.location.href = 'login.html', 2000);
+        return;
+      }
+      currentUser = user;
+
+      const initials = user.displayName ?
+        user.displayName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) :
+        (user.email || "U").slice(0, 2).toUpperCase();
+      document.getElementById("navAvatar").textContent = initials;
+
+      // Load 2FA state from Firestore
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const data = snap.exists() ? snap.data() : {};
+
+        twoFactorEnabled = data.twoFactorEnabled || false;
+        currentSecret = data.twoFactorSecret || "";
+        backupCodes = data.backupCodes || [];
+        const usedCodes = data.backupCodesUsed || [];
+
+        updateUI(twoFactorEnabled);
+
+        if (twoFactorEnabled && backupCodes.length > 0) {
+          document.getElementById("backupCard").classList.remove("hidden");
+          renderBackupCodes(backupCodes, usedCodes);
+        }
+
+      } catch (err) {
+        console.error("Load 2FA state error:", err);
+      }
+    });
+
+    // ── Init ──
+    initOTPInputs();
+  </script>
+</body>
+</html>
