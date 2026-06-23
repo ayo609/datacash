@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications – DataCash</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1b2a;
+      --card: #112236;
+      --border: #1e3450;
+      --blue: #2196f3;
+      --blue-hover: #1976d2;
+      --muted: #8a9bb0;
+      --text: #e0e6f0;
+      --text-white: #fff;
+      --dark-input: #0d1b2a;
+      --red: #ef4444;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --orange: #f97316;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(30, 52, 80, 0.3);
+    }
+    .menu-btn {
+      background: #1a2c40;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .menu-btn:hover {
+      background: #1e3450;
+    }
+    .topbar-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar-btn {
+      background: #1a3a5c;
+      border: none;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: background 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .avatar-btn:hover {
+      background: #1e4a80;
+    }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 20px 18px 100px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── Action bar ── */
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .unread-count {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .unread-count strong {
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .mark-all-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mark-all-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    /* ── Notification Cards ── */
+    .notif-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notif-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .notif-card:hover {
+      border-color: #253d5e;
+    }
+    .notif-card.unread {
+      border-left: 3px solid var(--blue);
+      background: rgba(33, 150, 243, 0.04);
+    }
+    .notif-card.unread::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: -7px;
+      width: 10px;
+      height: 10px;
+      background: var(--blue);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+    }
+    .notif-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .notif-icon.deposit {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--green);
+    }
+    .notif-icon.withdrawal {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--red);
+    }
+    .notif-icon.data {
+      background: rgba(33, 150, 243, 0.12);
+      color: var(--blue);
+    }
+    .notif-icon.referral {
+      background: rgba(245, 200, 66, 0.12);
+      color: var(--gold);
+    }
+    .notif-icon.security {
+      background: rgba(249, 115, 22, 0.12);
+      color: var(--orange);
+    }
+    .notif-icon.system {
+      background: rgba(139, 154, 176, 0.12);
+      color: var(--muted);
+    }
+    .notif-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notif-content .notif-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+    .notif-content .notif-message {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+    .notif-content .notif-time {
+      font-size: 11px;
+      color: #4a6080;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .notif-delete {
+      background: transparent;
+      border: none;
+      color: #4a6080;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      font-size: 14px;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .notif-card:hover .notif-delete {
+      opacity: 1;
+    }
+    .notif-delete:hover {
+      color: var(--red);
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-state .empty-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .empty-state p {
+      font-size: 13px;
+      color: var(--muted);
+      max-width: 260px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ── Loading skeleton ── */
+    .skeleton-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .skel-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .skel-line {
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .skel {
+      background: linear-gradient(90deg, #1a2c40 25%, #1e3450 50%, #1a2c40 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    /* ── Delete confirm modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-box {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 28px 22px;
+      width: 90%;
+      max-width: 380px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .modal-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .modal-box p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+    }
+    .btn-cancel {
+      background: #1a2c40;
+      color: var(--text);
+    }
+    .btn-cancel:hover {
+      background: #1e3450;
+    }
+    .btn-confirm {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-confirm:hover {
+      background: #dc2626;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a2c40;
+      color: var(--text);
+      padding: 13px 22px;
+      border-radius: 30px;
+      font-size: 13.5px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <div class="topbar">
+    <a href="dashboard.html" class="menu-btn" aria-label="Back to dashboard">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+        <rect width="18" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="6" width="12" height="2" rx="1" fill="#e0e6f0" />
+        <rect y="12" width="16" height="2" rx="1" fill="#e0e6f0" />
+      </svg>
+    </a>
+    <div class="topbar-title">🔔 Notifications</div>
+    <div class="topbar-right">
+      <a href="profile.html" class="avatar-btn" id="navAvatar">??</a>
+    </div>
+  </div>
+
+  <!-- PAGE -->
+  <div class="page">
+    <!-- Action bar -->
+    <div class="action-bar">
+      <span class="unread-count">
+        <strong id="unreadBadge">0</strong> unread
+      </span>
+      <button class="mark-all-btn" onclick="markAllAsRead()" id="markAllBtn">
+        ✓ Mark all as read
+      </button>
+    </div>
+
+    <!-- Notification list -->
+    <div class="notif-list" id="notifList">
+      <!-- Skeleton loaders -->
+      <div class="skeleton-card" id="skeleton1">
+        <div class="skel-circle skel"></div>
+        <div style="flex:1">
+          <div class="skel-line skel" style="width:70%"></div>
+          <div class="skel-line skel" style="width:90%"></div>
+          <div class="skel-line skel" style="width:40%"></div>
+        </div>
+      </div>
+      <div class="skeleton-card" id="skeleton2">
+        <div class="skel-circle skel"></div>
+        <div style="flex:1">
+          <div class="skel-line skel" style="width:60%"></div>
+          <div class="skel-line skel" style="width:85%"></div>
+          <div class="skel-line skel" style="width:35%"></div>
+        </div>
+      </div>
+      <div class="skeleton-card" id="skeleton3">
+        <div class="skel-circle skel"></div>
+        <div style="flex:1">
+          <div class="skel-line skel" style="width:75%"></div>
+          <div class="skel-line skel" style="width:80%"></div>
+          <div class="skel-line skel" style="width:30%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state hidden" id="emptyState">
+      <div class="empty-icon">🔕</div>
+      <h3>No notifications yet</h3>
+      <p>You're all caught up! We'll notify you about deposits, withdrawals, data redemptions, and security updates.</p>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+      <h3>Delete notification?</h3>
+      <p>This notification will be permanently removed. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-confirm" id="confirmDeleteBtn" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      query,
+      where,
+      orderBy,
+      onSnapshot,
+      updateDoc,
+      deleteDoc,
+      writeBatch,
+      getDocs,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let unsubscribeListener = null;
+    let deleteTargetId = null;
+
+    // ── Toast ──
+    function showToast(msg, type = "info") {
+      const t = document.getElementById("toast");
+      const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
+      t.innerHTML = `${icon} ${msg}`;
+      t.className = `toast show ${type}`;
+      clearTimeout(t._timeout);
+      t._timeout = setTimeout(() => { t.className = "toast"; }, 3500);
+    }
+
+    // ── Time formatter ──
+    function timeAgo(ts) {
+      if (!ts) return "—";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      const now = new Date();
+      const diff = now - d;
+      const mins = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (mins < 1) return "Just now";
+      if (mins < 60) return `${mins}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days < 7) return `${days}d ago`;
+      return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    // ── Get icon class ──
+    function getIconClass(type) {
+      const t = (type || "").toLowerCase();
+      if (t.includes("deposit")) return "deposit";
+      if (t.includes("withdraw")) return "withdrawal";
+      if (t.includes("data") || t.includes("redeem")) return "data";
+      if (t.includes("referral")) return "referral";
+      if (t.includes("security") || t.includes("login") || t.includes("2fa") || t.includes("password")) return "security";
+      return "system";
+    }
+
+    function getIconEmoji(type) {
+      const t = (type || "").toLowerCase();
+      if (t.includes("deposit")) return "💰";
+      if (t.includes("withdraw")) return "💸";
+      if (t.includes("data") || t.includes("redeem")) return "📱";
+      if (t.includes("referral")) return "👥";
+      if (t.includes("security") || t.includes("login") || t.includes("2fa") || t.includes("password")) return "🔐";
+      return "📢";
+    }
+
+    // ── Render notifications ──
+    function renderNotifications(notifications) {
+      const notifList = document.getElementById("notifList");
+      const emptyState = document.getElementById("emptyState");
+      const unreadBadge = document.getElementById("unreadBadge");
+      const markAllBtn = document.getElementById("markAllBtn");
+
+      // Remove skeletons
+      document.querySelectorAll(".skeleton-card").forEach(el => el.remove());
+
+      if (!notifications || !notifications.length) {
+        notifList.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        unreadBadge.textContent = "0";
+        markAllBtn.style.opacity = "0.5";
+        markAllBtn.style.pointerEvents = "none";
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      notifList.classList.remove("hidden");
+
+      const unreadCount = notifications.filter(n => !n.read).length;
+      unreadBadge.textContent = unreadCount;
+
+      if (unreadCount > 0) {
+        markAllBtn.style.opacity = "1";
+        markAllBtn.style.pointerEvents = "all";
+      } else {
+        markAllBtn.style.opacity = "0.5";
+        markAllBtn.style.pointerEvents = "none";
+      }
+
+      notifList.innerHTML = notifications.map(n => {
+        const iconClass = getIconClass(n.type);
+        const iconEmoji = getIconEmoji(n.type);
+        const isUnread = !n.read;
+
+        return `
+          <div class="notif-card ${isUnread ? 'unread' : ''}" 
+               onclick="markAsRead('${n.id}', ${isUnread})" 
+               id="notif-${n.id}">
+            <div class="notif-icon ${iconClass}">${iconEmoji}</div>
+            <div class="notif-content">
+              <div class="notif-title">${n.title || "Notification"}</div>
+              <div class="notif-message">${n.message || ""}</div>
+              <div class="notif-time">🕐 ${timeAgo(n.createdAt)}</div>
+            </div>
+            <button class="notif-delete" onclick="event.stopPropagation(); openDeleteModal('${n.id}')" title="Delete">✕</button>
+          </div>`;
+      }).join("");
+    }
+
+    // ── Mark single notification as read ──
+    window.markAsRead = async function(notifId, isUnread) {
+      if (!isUnread || !currentUser) return;
+
+      try {
+        const notifRef = doc(db, "users", currentUser.uid, "notifications", notifId);
+        await updateDoc(notifRef, { read: true });
+
+        // Update UI
+        const card = document.getElementById(`notif-${notifId}`);
+        if (card) card.classList.remove("unread");
+      } catch (err) {
+        console.error("Mark as read error:", err);
+      }
+    };
+
+    // ── Mark all as read ──
+    window.markAllAsRead = async function() {
+      if (!currentUser) return;
+
+      try {
+        const notifRef = collection(db, "users", currentUser.uid, "notifications");
+        const q = query(notifRef, where("read", "==", false));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          showToast("No unread notifications.", "info");
+          return;
+        }
+
+        const batch = writeBatch(db);
+        snap.forEach(d => {
+          batch.update(d.ref, { read: true });
+        });
+        await batch.commit();
+
+        showToast("All notifications marked as read.", "success");
+      } catch (err) {
+        console.error("Mark all error:", err);
+        showToast("Failed to update notifications.", "error");
+      }
+    };
+
+    // ── Delete notification ──
+    window.openDeleteModal = function(notifId) {
+      deleteTargetId = notifId;
+      document.getElementById("deleteModal").classList.add("open");
+    };
+
+    window.closeDeleteModal = function() {
+      deleteTargetId = null;
+      document.getElementById("deleteModal").classList.remove("open");
+    };
+
+    window.confirmDelete = async function() {
+      if (!deleteTargetId || !currentUser) return;
+
+      const btn = document.getElementById("confirmDeleteBtn");
+      btn.disabled = true;
+      btn.textContent = "Deleting…";
+
+      try {
+        const notifRef = doc(db, "users", currentUser.uid, "notifications", deleteTargetId);
+        await deleteDoc(notifRef);
+        showToast("Notification deleted.", "success");
+      } catch (err) {
+        console.error("Delete error:", err);
+        showToast("Failed to delete notification.", "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Delete";
+        closeDeleteModal();
+      }
+    };
+
+    // ── Listen for notifications (real-time) ──
+    function listenNotifications(uid) {
+      if (unsubscribeListener) unsubscribeListener();
+
+      const notifRef = collection(db, "users", uid, "notifications");
+      const q = query(notifRef, orderBy("createdAt", "desc"));
+
+      unsubscribeListener = onSnapshot(q, (snap) => {
+        const notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderNotifications(notifications);
+      }, (err) => {
+        console.warn("Notification listener error:", err);
+        // If subcollection doesn't exist yet, show empty
+        renderNotifications([]);
+      });
+    }
+
+    // ── Seed demo notifications (first time only) ──
+    async function seedNotificationsIfEmpty(uid) {
+      try {
+        const notifRef = collection(db, "users", uid, "notifications");
+        const snap = await getDocs(query(notifRef, where("uid", "==", uid)));
+
+        if (!snap.empty) return; // Already has notifications
+
+        const batch = writeBatch(db);
+        const now = new Date();
+
+        const demos = [
+          {
+            uid,
+            type: "system",
+            title: "Welcome to DataCash! 🎉",
+            message: "Your account has been created successfully. Start by making a deposit to earn 5% daily returns.",
+            read: false,
+            createdAt: new Date(now.getTime() - 60000),
+          },
+          {
+            uid,
+            type: "security",
+            title: "Secure Your Account",
+            message: "Enable two-factor authentication (2FA) to add an extra layer of security to your account.",
+            read: false,
+            createdAt: new Date(now.getTime() - 120000),
+          },
+          {
+            uid,
+            type: "system",
+            title: "How to Get Started",
+            message: "1. Fund your wallet via bank transfer\n2. Watch your earnings grow daily\n3. Withdraw or redeem data anytime",
+            read: false,
+            createdAt: new Date(now.getTime() - 300000),
+          },
+          {
+            uid,
+            type: "referral",
+            title: "Referral Program",
+            message: "Share your referral link and earn commission when your referrals make deposits. Visit the Referrals page to get started!",
+            read: true,
+            createdAt: new Date(now.getTime() - 600000),
+          },
+        ];
+
+        demos.forEach(demo => {
+          const newRef = doc(notifRef);
+          batch.set(newRef, demo);
+        });
+
+        await batch.commit();
+        console.log("✅ Demo notifications seeded");
+      } catch (err) {
+        console.warn("Seed notifications error:", err);
+      }
+    }
+
+    // ── Auth state ──
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showToast("Please sign in to view notifications.", "error");
+        setTimeout(() => window.location.href = 'login.html', 2000);
+        return;
+      }
+      currentUser = user;
+
+      const initials = user.displayName ?
+        user.displayName.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) :
+        (user.email || "U").slice(0, 2).toUpperCase();
+      document.getElementById("navAvatar").textContent = initials;
+
+      // Seed demo notifications if none exist
+      await seedNotificationsIfEmpty(user.uid);
+
+      // Start real-time listener
+      listenNotifications(user.uid);
+    });
+
+    // Close modal on overlay click
+    document.getElementById("deleteModal").addEventListener("click", function(e) {
+      if (e.target === this) closeDeleteModal();
+    });
+  </script>
+</body>
+</html>
