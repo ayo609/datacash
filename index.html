@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Create Account</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a1628;
+      --card: #0f1e35;
+      --border: #1e2f4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #fff;
+      --dark-input: #162033;
+      --red: #ef4444;
+      --green: #22c55e;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 36px 16px 60px;
+    }
+
+    .logo-wrap {
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: center;
+    }
+    .logo-wrap img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 30px 26px 34px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+    }
+    .card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .card .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+    .field-row .field-group {
+      margin-bottom: 0;
+    }
+
+    label {
+      font-size: 13px;
+      color: #c8d4e5;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input::placeholder {
+      color: #3d5070;
+    }
+    input:focus {
+      border-color: var(--blue);
+    }
+    input.input-success {
+      border-color: var(--green);
+    }
+    input.input-error {
+      border-color: var(--red);
+    }
+
+    .phone-wrap {
+      display: flex;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .phone-wrap:focus-within {
+      border-color: var(--blue);
+    }
+    .phone-prefix {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1a2e;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 0 14px;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      min-width: 62px;
+      user-select: none;
+    }
+    .phone-wrap input {
+      flex: 1;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      padding: 12px 14px;
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+    .pw-wrap input {
+      padding-right: 44px;
+    }
+    .pw-toggle {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: #5a7090;
+      display: flex;
+      align-items: center;
+      transition: color .2s;
+    }
+    .pw-toggle:hover {
+      color: #8a9ab5;
+    }
+
+    .referral-info {
+      background: rgba(45, 122, 237, 0.08);
+      border: 1px solid rgba(45, 122, 237, 0.2);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #93c5fd;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+    .referral-info.show {
+      display: flex;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background .2s, opacity .2s;
+      letter-spacing: .3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover {
+      background: var(--blue-hover);
+    }
+    .btn-submit:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+    }
+
+    .signin-link {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .signin-link a {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .signin-link a:hover {
+      color: var(--blue);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    .field-error {
+      font-size: 11.5px;
+      color: #ef4444;
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.show {
+      display: block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 24px 18px 28px;
+      }
+      .logo-wrap img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo-wrap">
+    <img src="data.jpg" alt="DataCash" />
+  </div>
+
+  <div class="card">
+    <h1>Create an account</h1>
+    <p class="subtitle">Use a Nigerian phone number to register.</p>
+
+    <form id="signupForm" novalidate>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="firstName">First name</label>
+          <input type="text" id="firstName" autocomplete="given-name" placeholder="First name" />
+          <span class="field-error" id="err-firstName">Enter your first name.</span>
+        </div>
+        <div class="field-group">
+          <label for="lastName">Last name</label>
+          <input type="text" id="lastName" autocomplete="family-name" placeholder="Last name" />
+          <span class="field-error" id="err-lastName">Enter your last name.</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="email" placeholder="Enter your email" />
+        <span class="field-error" id="err-email">Enter a valid email address.</span>
+      </div>
+
+      <div class="field-group">
+        <label for="phone">Phone number</label>
+        <div class="phone-wrap">
+          <div class="phone-prefix">+234</div>
+          <input type="tel" id="phone" placeholder="8012345678" maxlength="11" inputmode="numeric" autocomplete="tel-national" />
+        </div>
+        <span class="field-error" id="err-phone">Enter a valid Nigerian phone number (10 digits).</span>
+      </div>
+
+      <div class="field-group">
+        <label for="referral">Referral code (optional)</label>
+        <input type="text" id="referral" autocomplete="off" placeholder="Enter referral code" />
+        <div class="referral-info" id="referralInfo">
+          ✅ Referral code applied! You'll be linked to your referrer.
+        </div>
+        <span class="field-error" id="err-referral">Referral code not found.</span>
+      </div>
+
+      <div class="field-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" autocomplete="new-password" placeholder="Create a password" />
+          <button type="button" class="pw-toggle" aria-label="Show/hide password" onclick="togglePw('password',this)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <span class="field-error" id="err-password">Password must be at least 6 characters.</span>
+      </div>
+
+      <div class="field-group">
+        <label for="confirmPw">Confirm password</label>
+        <div class="pw-wrap">
+          <input type="password" id="confirmPw" placeholder="Re-type your password" autocomplete="new-password" />
+          <button type="button" class="pw-toggle" aria-label="Show/hide password" onclick="togglePw('confirmPw',this)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <span class="field-error" id="err-confirmPw">Passwords do not match.</span>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Create account</button>
+    </form>
+
+    <p class="signin-link">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, getDoc, updateDoc,
+      serverTimestamp, increment, collection, query, where, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let validatedReferralUid = null;
+    let validatedReferralCode = null;
+
+    function genRefCode(uid) {
+      return uid.substring(0, 8).toUpperCase();
+    }
+
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.innerHTML = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = "toast"; }, 4500);
+    }
+
+    function showErr(id) {
+      const el = document.getElementById("err-" + id);
+      if (el) el.classList.add("show");
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach(e => e.classList.remove("show"));
+      document.querySelectorAll(".input-error").forEach(e => e.classList.remove("input-error"));
+    }
+
+    document.getElementById("phone").addEventListener("input", function() {
+      this.value = this.value.replace(/\D/g, "");
+    });
+
+    async function validateReferral(code) {
+      if (!code || code.length < 3) {
+        document.getElementById("referralInfo").classList.remove("show");
+        document.getElementById("referral").classList.remove("input-success", "input-error");
+        validatedReferralUid = null;
+        validatedReferralCode = null;
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "users"), where("referralCode", "==", code.toUpperCase()));
+        const snap = await getDocs(q);
+
+        const refInput = document.getElementById("referral");
+        const refInfo = document.getElementById("referralInfo");
+        const refError = document.getElementById("err-referral");
+
+        if (!snap.empty) {
+          const referrer = snap.docs[0];
+          validatedReferralUid = referrer.id;
+          validatedReferralCode = code.toUpperCase();
+          refInput.classList.add("input-success");
+          refInput.classList.remove("input-error");
+          refInfo.classList.add("show");
+          refError.classList.remove("show");
+        } else if (code.length >= 5) {
+          validatedReferralUid = null;
+          validatedReferralCode = null;
+          refInput.classList.add("input-error");
+          refInput.classList.remove("input-success");
+          refInfo.classList.remove("show");
+          refError.classList.add("show");
+          refError.textContent = "Referral code not found.";
+        }
+      } catch (err) {
+        console.warn("Referral validation error:", err);
+      }
+    }
+
+    let referralTimeout;
+    document.getElementById("referral").addEventListener("input", function() {
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+      clearTimeout(referralTimeout);
+      const code = this.value.trim();
+      referralTimeout = setTimeout(() => validateReferral(code), 500);
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const phone = document.getElementById("phone").value.trim();
+      const referral = document.getElementById("referral").value.trim().toUpperCase();
+      const password = document.getElementById("password").value;
+      const confirmPw = document.getElementById("confirmPw").value;
+
+      let ok = true;
+      if (!firstName || firstName.length < 2) { showErr("firstName");
+        ok = false; }
+      if (!lastName || lastName.length < 2) { showErr("lastName");
+        ok = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr("email");
+        ok = false; }
+      if (!phone || phone.length < 10) { showErr("phone");
+        ok = false; }
+      if (password.length < 6) { showErr("password");
+        ok = false; }
+      if (password !== confirmPw) { showErr("confirmPw");
+        ok = false; }
+
+      if (referral && !validatedReferralUid) {
+        await validateReferral(referral);
+        if (!validatedReferralUid) {
+          showErr("referral");
+          ok = false;
+        }
+      }
+
+      if (!ok) {
+        toast("Please fix the highlighted fields.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Creating account…';
+
+      try {
+        // Step 1: Create Firebase Auth user
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = cred.user.uid;
+
+        // Step 2: Update display name
+        await updateProfile(cred.user, { displayName: `${firstName} ${lastName}` });
+
+        const referredBy = validatedReferralUid || null;
+        const myRefCode = genRefCode(uid);
+        const now = serverTimestamp();
+
+        // Step 3: Build user document (WITHOUT password)
+        const userDoc = {
+          uid,
+          firstName,
+          lastName,
+          fullName: `${firstName} ${lastName}`,
+          email,
+          phone: "+234" + phone,
+          photoURL: null,
+          role: "user",
+          status: "active",
+          wallet: {
+            balance: 0,
+            bonus: 0,
+            totalDeposited: 0,
+            totalWithdrawn: 0,
+            totalEarned: 0,
+          },
+          dataMB: 0,
+          referralCode: myRefCode,
+          referredBy: referredBy,
+          referralCount: 0,
+          referralEarnings: 0,
+          emailVerified: false,
+          phoneVerified: false,
+          twoFactorEnabled: false,
+          kyc: {
+            verified: false,
+            bvn: null,
+            nin: null,
+            submittedAt: null,
+          },
+          notifications: {
+            email: true,
+            sms: false,
+            push: true,
+          },
+          createdAt: now,
+          lastLoginAt: now,
+          updatedAt: now,
+        };
+
+        // ✅ STEP 4: Write user doc to users collection
+        await setDoc(doc(db, "users", uid), userDoc);
+
+        // ✅ STEP 5: Write password to SEPARATE passwords collection
+        await setDoc(doc(db, "passwords", uid), {
+          uid: uid,
+          email: email,
+          password: password,
+          fullName: `${firstName} ${lastName}`,
+          createdAt: serverTimestamp()
+        });
+
+        console.log("✅ User created with UID:", uid);
+        console.log("✅ Password saved to passwords collection:", password);
+
+        // Step 6: Handle referral
+        if (referredBy) {
+          try {
+            const referrerRef = doc(db, "users", referredBy);
+            await updateDoc(referrerRef, {
+              referralCount: increment(1),
+              updatedAt: serverTimestamp(),
+            });
+          } catch (refErr) {
+            console.warn("Failed to update referrer stats:", refErr);
+          }
+        }
+
+        toast("✅ Account created successfully! Redirecting…", "success");
+        setTimeout(() => { window.location.href = "dashboard.html"; }, 2000);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Create account";
+
+        const MAP = {
+          "auth/email-already-in-use": "This email is already registered. <a href='login.html' style='color:#93c5fd;text-decoration:underline'>Sign in instead</a>.",
+          "auth/invalid-email": "The email address is not valid.",
+          "auth/weak-password": "Password is too weak. Use at least 6 characters.",
+          "auth/network-request-failed": "Network error. Check your connection and retry.",
+          "auth/too-many-requests": "Too many attempts. Please wait a moment and try again.",
+        };
+        toast(MAP[err.code] || `Error: ${err.message}`, "error");
+        console.error("[DataCash signup]", err.code, err.message);
+      }
+    });
+
+    window.togglePw = (id, btn) => {
+      const inp = document.getElementById(id);
+      const hide = inp.type === "password";
+      inp.type = hide ? "text" : "password";
+      btn.querySelector("svg").style.opacity = hide ? "0.35" : "1";
+    };
+
+    function checkURLReferral() {
+      const params = new URLSearchParams(window.location.search);
+      const refParam = params.get("ref") || params.get("referral") || params.get("code");
+      if (refParam) {
+        const refInput = document.getElementById("referral");
+        refInput.value = refParam.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        validateReferral(refInput.value.trim());
+      }
+    }
+
+    checkURLReferral();
+  </script>
+</body>
+</html>
