@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Deposit</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080f1e;
+      --card: #0d1b30;
+      --card2: #0a1628;
+      --border: #1a2d4a;
+      --blue: #2d7aed;
+      --muted: #8a9ab5;
+      --text: #fff;
+      --dark-input: #060d1a;
+      --red: #ef4444;
+      --green: #22c55e;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid #0d1b30;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .btn-menu {
+      width: 42px;
+      height: 42px;
+      background: #0d1b30;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+      text-decoration: none;
+    }
+    .btn-menu:hover {
+      background: #1a2d4a;
+    }
+    .topbar-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-notif {
+      width: 42px;
+      height: 42px;
+      background: #0d1b30;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      position: relative;
+      transition: background .2s;
+    }
+    .btn-notif:hover {
+      background: #1a2d4a;
+    }
+    .notif-dot {
+      position: absolute;
+      top: 8px;
+      right: 9px;
+      width: 8px;
+      height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+      border: 1.5px solid var(--bg);
+    }
+    .btn-avatar {
+      width: 42px;
+      height: 42px;
+      background: #1a3a6a;
+      border: 1px solid var(--blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-avatar:hover {
+      background: #1e4a80;
+    }
+
+    /* ── Main ── */
+    .main {
+      padding: 20px 16px 80px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Deposit Card ── */
+    .deposit-card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px 20px;
+      border: 1px solid var(--border);
+    }
+
+    /* Card header */
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .card-head-left h2 {
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .card-head-left p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+    .card-head-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-history {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0a1628;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+    .btn-history:hover {
+      background: #1a2d4a;
+    }
+    .btn-hist-icon {
+      width: 36px;
+      height: 36px;
+      background: #0d2a5a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-hist-icon:hover {
+      background: #1a3a6a;
+    }
+
+    /* Progress */
+    .step-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .step-meta .step-label {
+      color: var(--muted);
+    }
+    .step-meta .step-label span {
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .step-meta .step-pct {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #1a2d4a;
+      border-radius: 50px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 50px;
+      transition: width .4s ease;
+    }
+
+    /* Step title */
+    .step-title h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step-title p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .step-title .badge-pill {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 50px;
+      background: #0d2a5a;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+      float: right;
+      margin-top: -28px;
+    }
+
+    /* ── STEP 1 – payment method ── */
+    .method-option {
+      background: var(--dark-input);
+      border: 1.5px solid var(--blue);
+      border-radius: 14px;
+      padding: 16px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin-bottom: 6px;
+    }
+    .method-option .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .radio-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .radio-dot::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+    .method-option strong {
+      font-size: 15px;
+    }
+    .method-option p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .method-icon {
+      width: 36px;
+      height: 36px;
+      background: #0d2a5a;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* ── STEP 2 – amount ── */
+    .amount-wrap {
+      background: var(--dark-input);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .amount-wrap:focus-within {
+      border-color: var(--blue);
+    }
+    .currency-label {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .amount-wrap input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .amount-wrap input::placeholder {
+      color: #2a3a55;
+    }
+
+    .quick-amounts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .quick-btn {
+      padding: 7px 14px;
+      border-radius: 50px;
+      background: #0a1628;
+      border: 1px solid var(--border);
+      color: #c8d4e5;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .quick-btn:hover,
+    .quick-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .min-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* ── STEP 3 – review ── */
+    .review-box {
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .review-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .review-row:last-child {
+      border-bottom: none;
+    }
+    .review-row .rl {
+      color: var(--muted);
+    }
+    .review-row .rr {
+      font-weight: 700;
+    }
+
+    .bank-section {
+      margin-bottom: 14px;
+    }
+    .bank-section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .bank-section-head h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .copy-all-btn {
+      background: #0a1628;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 12px;
+      color: #c8d4e5;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .copy-all-btn:hover {
+      background: var(--border);
+    }
+
+    .bank-card {
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .bank-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #0d1b30;
+      font-size: 13px;
+    }
+    .bank-row:last-child {
+      border-bottom: none;
+    }
+    .bank-row .bl {
+      color: var(--muted);
+    }
+    .bank-row .br {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .copy-num-btn {
+      background: #0d1b30;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background .2s;
+    }
+    .copy-num-btn:hover {
+      background: var(--border);
+    }
+
+    /* ── STEP 4 – upload proof ── */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s;
+      background: var(--dark-input);
+      margin-bottom: 14px;
+    }
+    .upload-area:hover {
+      border-color: var(--blue);
+    }
+    .upload-area.has-image {
+      border-color: var(--blue);
+      border-style: solid;
+    }
+    .upload-area .upload-icon {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .upload-area p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .upload-area p strong {
+      color: var(--blue);
+    }
+    #proofInput {
+      display: none;
+    }
+    #previewImg {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      display: none;
+    }
+    .file-size-note {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .compress-note {
+      font-size: 11px;
+      color: #22c55e;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .ref-field label {
+      font-size: 13px;
+      color: #c8d4e5;
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .ref-field input {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .ref-field input:focus {
+      border-color: var(--blue);
+    }
+    .ref-field input::placeholder {
+      color: #2a3a55;
+    }
+
+    /* ── Navigation buttons ── */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      gap: 12px;
+    }
+    .btn-back {
+      padding: 13px 24px;
+      border-radius: 50px;
+      background: #0a1628;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .btn-back:hover {
+      background: #1a2d4a;
+      color: #fff;
+    }
+    .btn-next {
+      padding: 13px 32px;
+      border-radius: 50px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      flex: 1;
+      max-width: 200px;
+    }
+    .btn-next:hover {
+      background: #1a68d9;
+    }
+    .btn-next:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    .btn-full {
+      width: 100%;
+      padding: 15px;
+      border-radius: 50px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      margin-top: 14px;
+      transition: background .2s, opacity .2s;
+    }
+    .btn-full:hover {
+      background: #1a68d9;
+    }
+    .btn-full:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      border-left: 4px solid #22c55e;
+    }
+    .toast.error {
+      border-left: 4px solid #ef4444;
+    }
+    .toast.info {
+      border-left: 4px solid var(--blue);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    .whatsapp-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(37, 211, 102, .4);
+      z-index: 90;
+      transition: transform .2s;
+    }
+    .whatsapp-fab:hover {
+      transform: scale(1.08);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Topbar ── -->
+  <header class="topbar">
+    <a href="dashboard.html" class="btn-menu" aria-label="Back to dashboard">☰</a>
+    <div class="topbar-right">
+      <a href="notifications.html" class="btn-notif" aria-label="Notifications">🔔<span class="notif-dot"></span></a>
+      <a href="profile.html" class="btn-avatar" id="avatarBtn" aria-label="Profile">??</a>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="main">
+    <div class="deposit-card">
+
+      <!-- Header -->
+      <div class="card-head">
+        <div class="card-head-left">
+          <h2>Deposit</h2>
+          <p>NGN • Minimum deposit<br>₦10,000 • Bank Transfer</p>
+        </div>
+        <div class="card-head-right">
+          <a href="history.html" class="btn-history">🕐 History</a>
+          <a href="dashboard.html" class="btn-hist-icon">💼</a>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="step-meta">
+        <div class="step-label">Step <span id="stepNum">1</span> of 4: <span id="stepName">Choose payment method</span></div>
+        <div class="step-pct" id="stepPct">25%</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:25%"></div>
+      </div>
+
+      <!-- ════ STEP 1: Payment Method ════ -->
+      <div id="step1">
+        <div class="step-title">
+          <h3>Choose payment method <span class="badge-pill">Bank Transfer</span></h3>
+          <p>Only Bank Transfer is supported.</p>
+        </div>
+        <div class="method-option">
+          <div class="left">
+            <div class="radio-dot"></div>
+            <div>
+              <strong>Bank Transfer</strong>
+              <p>Transfer to the provided account and upload proof.</p>
+            </div>
+          </div>
+          <div class="method-icon">💳</div>
+        </div>
+        <div class="nav-row">
+          <button class="btn-back" onclick="window.location.href='dashboard.html'">Back</button>
+          <button class="btn-next" onclick="goStep(2)">Next</button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 2: Enter Amount ════ -->
+      <div id="step2" style="display:none">
+        <div class="step-title">
+          <h3>Enter deposit amount</h3>
+          <p>Minimum deposit is ₦10,000.</p>
+        </div>
+
+        <div class="amount-wrap">
+          <span class="currency-label">₦</span>
+          <input type="number" id="amountInput" placeholder="10,000" min="10000" inputmode="numeric" />
+        </div>
+
+        <div class="quick-amounts">
+          <button class="quick-btn" onclick="setAmount(10000)">₦10k</button>
+          <button class="quick-btn" onclick="setAmount(20000)">₦20k</button>
+          <button class="quick-btn" onclick="setAmount(50000)">₦50k</button>
+          <button class="quick-btn" onclick="setAmount(100000)">₦100k</button>
+          <button class="quick-btn" onclick="setAmount(200000)">₦200k</button>
+        </div>
+        <p class="min-note">Minimum: ₦10,000 • No maximum limit</p>
+
+        <div class="nav-row">
+          <button class="btn-back" onclick="goStep(1)">Back</button>
+          <button class="btn-next" onclick="validateAmount()">Next</button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 3: Review & Bank Details ════ -->
+      <div id="step3" style="display:none">
+        <div class="step-title">
+          <h3>Review &amp; continue</h3>
+          <p>Next step: upload proof of payment.</p>
+        </div>
+
+        <!-- Summary -->
+        <div class="review-box" style="margin-bottom:16px">
+          <div class="review-row">
+            <span class="rl">Method</span>
+            <span class="rr">Bank Transfer</span>
+          </div>
+          <div class="review-row">
+            <span class="rl">Amount</span>
+            <span class="rr" id="reviewAmount">₦0</span>
+          </div>
+        </div>
+
+        <!-- ✅ UPDATED Bank account details — Paystack-Titan only -->
+        <div class="bank-section">
+          <div class="bank-section-head">
+            <h4>💳 Payment Details for Deposit</h4>
+            <button class="copy-all-btn" onclick="copyAllDetails()">📋 Copy all details</button>
+          </div>
+
+          <div class="bank-card">
+            <div class="bank-row">
+              <span class="bl">Bank Name</span>
+              <span class="br">Paystack-Titan</span>
+            </div>
+            <div class="bank-row">
+              <span class="bl">Account Name</span>
+              <span class="br">CHIPPERCASH/ADEYEMO FUWAD</span>
+            </div>
+            <div class="bank-row">
+              <span class="bl">Account Number</span>
+              <span class="br">
+                9779774452
+                <button class="copy-num-btn" onclick="copyText('9779774452', this)">⧉ Copy</button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-full" onclick="goStep(4)">Continue to upload proof</button>
+        <div class="nav-row" style="margin-top:12px">
+          <button class="btn-back" onclick="goStep(2)">Back</button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 4: Upload Proof ════ -->
+      <div id="step4" style="display:none">
+        <div class="step-title">
+          <h3>Upload proof of payment</h3>
+          <p>Upload your transfer receipt or screenshot.</p>
+        </div>
+
+        <!-- Image preview + upload area -->
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('proofInput').click()">
+          <img id="previewImg" src="" alt="Payment proof preview" />
+          <div id="uploadPlaceholder">
+            <div class="upload-icon">📷</div>
+            <p><strong>Tap to upload</strong> receipt or screenshot</p>
+            <p style="font-size:11px;margin-top:6px">JPG, PNG — auto compressed to &lt;200KB</p>
+          </div>
+        </div>
+        <input type="file" id="proofInput" accept="image/*" onchange="handleImageUpload(event)" />
+        <p class="compress-note" id="compressNote" style="display:none">✅ Image compressed successfully</p>
+        <p class="file-size-note" id="fileSizeNote"></p>
+
+        <!-- Reference number -->
+        <div class="ref-field" style="margin-top:10px">
+          <label for="refNumber">Transaction reference / narration (optional)</label>
+          <input type="text" id="refNumber" placeholder="e.g. TRF/2026/0001 or your name" />
+        </div>
+
+        <button class="btn-full" id="submitBtn" onclick="submitDeposit()">
+          Submit deposit request
+        </button>
+        <div class="nav-row" style="margin-top:12px">
+          <button class="btn-back" onclick="goStep(3)">Back</button>
+        </div>
+      </div>
+
+    </div><!-- /deposit-card -->
+  </main>
+
+  <a href="https://wa.me/2348000000000" target="_blank" rel="noopener" class="whatsapp-fab" aria-label="Chat on WhatsApp">💬</a>
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp, doc, getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let compressedBase64 = null;
+
+    /* ── Auth guard ── */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      currentUser = user;
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const d = snap.data();
+          const name = d.fullName || user.displayName || "U";
+          document.getElementById("avatarBtn").textContent =
+            name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+        }
+      } catch (e) {
+        console.warn("User doc fetch failed", e);
+      }
+    });
+
+    /* ── Toast ── */
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = "toast"; }, 4500);
+    }
+
+    /* ── Step navigation ── */
+    const steps = {
+      1: { name: "Choose payment method", pct: 25 },
+      2: { name: "Enter deposit amount", pct: 50 },
+      3: { name: "Review & continue", pct: 75 },
+      4: { name: "Upload proof", pct: 100 },
+    };
+
+    window.goStep = function(n) {
+      [1, 2, 3, 4].forEach(i => {
+        document.getElementById(`step${i}`).style.display = i === n ? "block" : "none";
+      });
+      document.getElementById("stepNum").textContent = n;
+      document.getElementById("stepName").textContent = steps[n].name;
+      document.getElementById("stepPct").textContent = steps[n].pct + "%";
+      document.getElementById("progressFill").style.width = steps[n].pct + "%";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    /* ── Quick amount setter ── */
+    window.setAmount = function(val) {
+      document.getElementById("amountInput").value = val;
+      document.querySelectorAll(".quick-btn").forEach(b => b.classList.remove("active"));
+      const buttons = document.querySelectorAll(".quick-btn");
+      buttons.forEach(b => {
+        if (b.textContent.includes(val.toLocaleString("en-NG") || val)) {
+          b.classList.add("active");
+        }
+      });
+    };
+
+    /* ── Validate amount ── */
+    window.validateAmount = function() {
+      const amt = parseFloat(document.getElementById("amountInput").value);
+      if (!amt || amt < 10000) {
+        toast("Minimum deposit is ₦10,000.", "error");
+        return;
+      }
+      document.getElementById("reviewAmount").textContent =
+        "₦" + amt.toLocaleString("en-NG");
+      goStep(3);
+    };
+
+    /* ── Copy helpers ── */
+    window.copyText = function(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = "✓ Copied";
+        btn.style.color = "#22c55e";
+        setTimeout(() => { btn.innerHTML = orig;
+          btn.style.color = ""; }, 2000);
+      }).catch(() => toast("Copy failed. Please copy manually.", "error"));
+    };
+
+    // ✅ Updated copy all details
+    window.copyAllDetails = function() {
+      const details =
+        `Bank Name: Paystack-Titan\nAccount Name: CHIPPERCASH/ADEYEMO FUWAD\nAccount Number: 9779774452`;
+      navigator.clipboard.writeText(details).then(() => {
+        toast("✅ Bank details copied to clipboard!", "success");
+      }).catch(() => toast("Copy failed.", "error"));
+    };
+
+    /* ── Image compression + upload ── */
+    window.handleImageUpload = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          /* Compress via canvas */
+          const canvas = document.createElement("canvas");
+          const MAX_W = 1000;
+          let { width, height } = img;
+          if (width > MAX_W) {
+            height = Math.round(height * MAX_W / width);
+            width = MAX_W;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+
+          /* Try quality levels until <200KB */
+          let quality = 0.8;
+          let b64 = canvas.toDataURL("image/jpeg", quality);
+          while (b64.length > 270000 && quality > 0.3) {
+            quality -= 0.1;
+            b64 = canvas.toDataURL("image/jpeg", quality);
+          }
+
+          compressedBase64 = b64;
+          const kb = Math.round(b64.length * 0.75 / 1024);
+
+          /* Show preview */
+          const preview = document.getElementById("previewImg");
+          preview.src = b64;
+          preview.style.display = "block";
+          document.getElementById("uploadPlaceholder").style.display = "none";
+          document.getElementById("uploadArea").classList.add("has-image");
+          document.getElementById("compressNote").style.display = "block";
+          document.getElementById("fileSizeNote").textContent = `Compressed size: ~${kb}KB`;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    /* ── Submit deposit to Firestore ── */
+    window.submitDeposit = async function() {
+      if (!compressedBase64) {
+        toast("Please upload your proof of payment.", "error");
+        return;
+      }
+      if (!currentUser) {
+        toast("Session expired. Please sign in again.", "error");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const amt = parseFloat(document.getElementById("amountInput").value);
+      const ref = document.getElementById("refNumber").value.trim();
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+      try {
+        await addDoc(collection(db, "deposits"), {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          amount: amt,
+          method: "Bank Transfer",
+          bankName: "Paystack-Titan",
+          accountName: "CHIPPERCASH/ADEYEMO FUWAD",
+          accountNumber: "9779774452",
+          status: "pending",
+          proofBase64: compressedBase64,
+          reference: ref || null,
+          createdAt: serverTimestamp(),
+          reviewedAt: null,
+          reviewedBy: null,
+          note: null,
+        });
+
+        await addDoc(collection(db, "transactions"), {
+          uid: currentUser.uid,
+          type: "Deposit",
+          amount: amt,
+          method: "Bank Transfer",
+          status: "Initiated",
+          reference: ref || null,
+          createdAt: serverTimestamp(),
+        });
+
+        toast("✅ Deposit submitted successfully! Redirecting to history…", "success");
+        btn.innerHTML = "✅ Submitted";
+        btn.style.background = "#22c55e";
+
+        setTimeout(() => {
+          window.location.href = "history.html";
+        }, 2000);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Submit deposit request";
+        btn.style.background = "";
+        toast("Submission failed: " + err.message, "error");
+        console.error("Deposit error:", err);
+      }
+    };
+  </script>
+</body>
+</html>
