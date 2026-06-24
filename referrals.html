@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referrals – DataCash</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #080f1e; --card: #0d1b30; --border: #1a2d4a;
+      --blue: #2d7aed; --muted: #8a9ab5; --text: #e0e6f0;
+      --dark-input: #060d1a; --red: #ef4444;
+      --green: #22c55e; --gold: #f59e0b;
+    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Topbar */
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .menu-btn { background: #0d1b30; border: none; color: var(--text); width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 18px; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .notif-btn { position: relative; background: #0d1b30; border: 1px solid var(--border); color: var(--text); width: 40px; height: 40px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+    .avatar-btn { background: #1a3a6a; border: 1px solid var(--blue); color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+    /* Page */
+    .page { padding: 22px 16px 100px; max-width: 480px; margin: 0 auto; }
+    h1 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 5px; }
+    .page-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; }
+    .stat-box .sv { font-size: 22px; font-weight: 800; color: #fff; }
+    .stat-box .sl { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 500; }
+    .stat-box.green .sv { color: var(--green); }
+    .stat-box.gold  .sv { color: var(--gold); }
+    .stat-box.blue  .sv { color: var(--blue); }
+
+    /* Commission breakdown */
+    .commission-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 18px; }
+    .commission-card h3 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .comm-level { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .comm-level:last-child { border-bottom: none; }
+    .comm-level .cl { color: var(--muted); }
+    .comm-level .cr { font-weight: 700; }
+    .comm-level .cr.green { color: var(--green); }
+    .comm-level .cr.gold { color: var(--gold); }
+    .comm-level .cr.blue { color: var(--blue); }
+
+    /* Card */
+    .card { background: var(--card); border-radius: 16px; padding: 20px 18px; margin-bottom: 18px; border: 1px solid var(--border); }
+    .card-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .card-desc { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+    /* Link box */
+    .link-box { background: var(--dark-input); border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; font-size: 12.5px; color: var(--text); word-break: break-all; margin-bottom: 10px; min-height: 48px; display: flex; align-items: center; user-select: all; line-height: 1.4; }
+    .link-box.loading { color: #3d5070; font-style: italic; }
+
+    /* Ref code box */
+    .code-box { background: var(--dark-input); border: 1px solid var(--blue); border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 12px; }
+    .code-box .code-val { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 3px; }
+    .code-box .code-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Buttons */
+    .copy-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 14px; font-size: 15px; font-weight: 700; padding: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; transition: background .2s; }
+    .copy-btn:hover { background: #1a68d9; }
+    .copy-btn.copied { background: #16a34a; }
+    .copy-code-btn { width: 100%; background: #0a1628; color: #c8d4e5; border: 1px solid var(--border); border-radius: 12px; font-size: 13px; font-weight: 600; padding: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 10px; transition: background .2s; }
+    .copy-code-btn:hover { background: var(--border); }
+
+    /* Share buttons */
+    .share-row { display: flex; gap: 8px; margin-bottom: 4px; }
+    .share-btn { flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--dark-input); color: var(--text); text-decoration: none; transition: all .15s; }
+    .share-btn:hover { background: #1a2c40; border-color: var(--blue); }
+    .share-btn.wa { color: #25d366; }
+    .share-btn.tg { color: #0088cc; }
+
+    /* Downlines table */
+    .activity-card { background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 16px; }
+    .act-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 12px; }
+    .act-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .act-badge { background: #0a1628; color: var(--muted); font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); }
+
+    /* Tabs for level filter */
+    .level-tabs { display: flex; gap: 6px; padding: 0 18px 12px; overflow-x: auto; }
+    .level-tab { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); background: var(--dark-input); color: var(--muted); cursor: pointer; white-space: nowrap; transition: all .15s; }
+    .level-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    .ref-table { width: 100%; border-collapse: collapse; }
+    .ref-table thead tr { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .ref-table thead th { padding: 11px 16px; font-size: 12px; font-weight: 600; color: var(--muted); text-align: left; background: #0a1628; }
+    .ref-table thead th:last-child { text-align: right; }
+    .ref-table tbody tr { border-bottom: 1px solid #0a1628; transition: background .15s; }
+    .ref-table tbody tr:hover { background: var(--dark-input); }
+    .ref-table tbody td { padding: 12px 16px; font-size: 13px; color: var(--text); vertical-align: middle; }
+    .ref-table tbody td:last-child { text-align: right; }
+    .td-name { font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
+    .td-email { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+    .td-amount { color: var(--green); font-weight: 700; }
+    .td-date { color: var(--muted); white-space: nowrap; font-size: 12px; }
+    .level-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+    .lb1 { background: rgba(45,122,237,.15); color: var(--blue); }
+    .lb2 { background: rgba(245,158,11,.12); color: var(--gold); }
+    .lb3 { background: rgba(34,197,94,.12); color: var(--green); }
+
+    /* Empty */
+    .empty-state { text-align: center; padding: 40px 20px; display: none; }
+    .empty-state .ei { font-size: 36px; margin-bottom: 12px; opacity: .4; }
+    .empty-state .em { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-state .es { font-size: 12px; color: #4a6080; }
+
+    /* Skeleton */
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skel { height: 12px; border-radius: 6px; background: linear-gradient(90deg,#1a2c40 25%,#1e3450 50%,#1a2c40 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a2d4a; color: #fff; padding: 12px 22px; border-radius: 14px; font-size: 13.5px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.4); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: all; }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.error   { border-left: 4px solid var(--red); }
+    .toast.info    { border-left: 4px solid var(--blue); }
+
+    .wa-fab { position: fixed; bottom: 24px; right: 20px; width: 52px; height: 52px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(37,211,102,.4); z-index: 150; text-decoration: none; font-size: 26px; }
+    @media (max-width: 480px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="dashboard.html" class="menu-btn">☰</a>
+    <div class="topbar-right">
+      <a href="notifications.html" class="notif-btn">🔔</a>
+      <a href="profile.html" class="avatar-btn" id="navAvatar">??</a>
+    </div>
+  </div>
+
+  <div class="page">
+    <h1>Referrals</h1>
+    <p class="page-subtitle">Earn commissions when your referrals deposit funds.</p>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box blue">
+        <div class="sv" id="statCount">0</div>
+        <div class="sl">Total Referrals</div>
+      </div>
+      <div class="stat-box green">
+        <div class="sv" id="statEarnings">₦0</div>
+        <div class="sl">Total Earned</div>
+      </div>
+      <div class="stat-box gold">
+        <div class="sv" id="statPending">₦0</div>
+        <div class="sl">Pending</div>
+      </div>
+    </div>
+
+    <!-- Commission structure -->
+    <div class="commission-card">
+      <h3>💰 Commission Structure</h3>
+      <div class="comm-level">
+        <span class="cl">Level 1 (Direct referrals)</span>
+        <span class="cr green">5% of deposit</span>
+      </div>
+      <div class="comm-level">
+        <span class="cl">Level 2 (Their referrals)</span>
+        <span class="cr gold">2% of deposit</span>
+      </div>
+      <div class="comm-level">
+        <span class="cl">Level 3 (Level 2's referrals)</span>
+        <span class="cr blue">1% of deposit</span>
+      </div>
+    </div>
+
+    <!-- Referral link card -->
+    <div class="card">
+      <div class="card-title">Your referral link</div>
+      <div class="card-desc">Share this link. Anyone who registers through it is tracked automatically.</div>
+
+      <div class="code-box">
+        <div class="code-val" id="refCode">——</div>
+        <div class="code-lbl">Your referral code</div>
+      </div>
+
+      <div class="link-box loading" id="refLinkBox">Generating your link…</div>
+
+      <button class="copy-btn" id="copyLinkBtn" onclick="copyLink()">
+        📋 Copy referral link
+      </button>
+      <button class="copy-code-btn" onclick="copyCode()">
+        🔢 Copy code only
+      </button>
+
+      <div class="share-row">
+        <a href="#" class="share-btn wa" id="shareWA" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a href="#" class="share-btn tg" id="shareTG" target="_blank" rel="noopener">📨 Telegram</a>
+      </div>
+    </div>
+
+    <!-- Downlines table -->
+    <div class="activity-card">
+      <div class="act-header">
+        <div class="act-title">Referral activity</div>
+        <span class="act-badge" id="actBadge">Live</span>
+      </div>
+
+      <!-- Level filter tabs -->
+      <div class="level-tabs">
+        <button class="level-tab active" onclick="filterLevel('all',this)">All</button>
+        <button class="level-tab" onclick="filterLevel('1',this)">Level 1</button>
+        <button class="level-tab" onclick="filterLevel('2',this)">Level 2</button>
+        <button class="level-tab" onclick="filterLevel('3',this)">Level 3</button>
+      </div>
+
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Level</th>
+            <th>Commission</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="refTableBody">
+          <tr><td><div class="skel" style="width:70px"></div></td><td><div class="skel" style="width:40px"></div></td><td><div class="skel" style="width:50px"></div></td><td><div class="skel" style="width:60px"></div></td></tr>
+          <tr><td><div class="skel" style="width:80px"></div></td><td><div class="skel" style="width:40px"></div></td><td><div class="skel" style="width:50px"></div></td><td><div class="skel" style="width:60px"></div></td></tr>
+        </tbody>
+      </table>
+      <div class="empty-state" id="emptyState">
+        <div class="ei">👥</div>
+        <div class="em">No referrals yet</div>
+        <div class="es">Share your referral link to start earning. You earn 5% of every deposit your referrals make.</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/2348000000000" target="_blank" class="wa-fab">💬</a>
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc,
+      collection, query, where, getDocs, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY",
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: "datacash-104dd",
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    let currentRefLink = "";
+    let currentRefCode = "";
+    let allDownlines   = [];   // all 3 levels combined
+    let unsubRef       = null;
+
+    /* ── Toast ── */
+    function toast(msg, type = "info") {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = `toast show ${type}`;
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.className = "toast"; }, 3500);
+    }
+
+    function fmtNGN(n) { return "₦" + Number(n || 0).toLocaleString("en-NG"); }
+    function fmtDate(ts) {
+      if (!ts) return "–";
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
+    }
+
+    function getBaseURL() {
+      return `${window.location.protocol}//${window.location.host}`.replace(/\/$/, "");
+    }
+
+    /* ── Copy helpers ── */
+    window.copyLink = async function() {
+      if (!currentRefLink) return;
+      const btn = document.getElementById("copyLinkBtn");
+      try {
+        await navigator.clipboard.writeText(currentRefLink);
+      } catch(e) {
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = currentRefLink; document.body.appendChild(ta);
+        ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
+      }
+      btn.textContent = "✅ Copied!";
+      btn.classList.add("copied");
+      toast("Referral link copied!", "success");
+      setTimeout(() => { btn.textContent = "📋 Copy referral link"; btn.classList.remove("copied"); }, 2500);
+    };
+
+    window.copyCode = async function() {
+      if (!currentRefCode) return;
+      try { await navigator.clipboard.writeText(currentRefCode); }
+      catch(e) { const ta = document.createElement("textarea"); ta.value=currentRefCode; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); }
+      toast("Referral code copied!", "success");
+    };
+
+    /* ── Update share links ── */
+    function updateShareLinks(link, code) {
+      const msg = encodeURIComponent(
+        `🚀 Join DataCash and earn 5% daily returns!\n\nSign up with my referral link:\n${link}\n\nReferral code: ${code}`
+      );
+      document.getElementById("shareWA").href = `https://wa.me/?text=${msg}`;
+      document.getElementById("shareTG").href = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent("Join DataCash — earn 5% daily returns on investments!")}`;
+    }
+
+    /* ── Level filter ── */
+    window.filterLevel = function(level, btn) {
+      document.querySelectorAll(".level-tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const filtered = level === "all" ? allDownlines : allDownlines.filter(d => String(d.level) === level);
+      renderTable(filtered);
+    };
+
+    /* ────────────────────────────────────────────────────
+       LOAD DOWNLINES — 3 levels deep
+       NO orderBy = no composite index needed
+       Sort in JS instead
+    ──────────────────────────────────────────────────── */
+    async function loadDownlines(myUid) {
+      try {
+        /* LEVEL 1 — users whose referredBy === myUid */
+        const q1   = query(collection(db, "users"), where("referredBy", "==", myUid));
+        const s1   = await getDocs(q1);
+        const lvl1 = s1.docs.map(d => ({ id: d.id, level: 1, ...d.data() }));
+
+        /* LEVEL 2 — users referred by any level-1 user */
+        let lvl2 = [];
+        if (lvl1.length > 0) {
+          const lvl1Uids = lvl1.map(u => u.uid || u.id).filter(Boolean);
+          // Firestore 'in' supports up to 30 values
+          const chunks = [];
+          for (let i = 0; i < lvl1Uids.length; i += 30) chunks.push(lvl1Uids.slice(i, i+30));
+          for (const chunk of chunks) {
+            const q2   = query(collection(db, "users"), where("referredBy", "in", chunk));
+            const s2   = await getDocs(q2);
+            lvl2 = lvl2.concat(s2.docs.map(d => ({ id: d.id, level: 2, ...d.data() })));
+          }
+        }
+
+        /* LEVEL 3 — users referred by any level-2 user */
+        let lvl3 = [];
+        if (lvl2.length > 0) {
+          const lvl2Uids = lvl2.map(u => u.uid || u.id).filter(Boolean);
+          const chunks = [];
+          for (let i = 0; i < lvl2Uids.length; i += 30) chunks.push(lvl2Uids.slice(i, i+30));
+          for (const chunk of chunks) {
+            const q3   = query(collection(db, "users"), where("referredBy", "in", chunk));
+            const s3   = await getDocs(q3);
+            lvl3 = lvl3.concat(s3.docs.map(d => ({ id: d.id, level: 3, ...d.data() })));
+          }
+        }
+
+        allDownlines = [...lvl1, ...lvl2, ...lvl3]
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+        /* Commission per level: 5% / 2% / 1% of totalDeposited */
+        const RATES = { 1: 0.05, 2: 0.02, 3: 0.01 };
+        allDownlines.forEach(u => {
+          const dep = u.wallet?.totalDeposited || 0;
+          u._commission = dep * (RATES[u.level] || 0);
+        });
+
+        /* Stats */
+        const totalEarned  = allDownlines.reduce((s,u) => s + u._commission, 0);
+        const totalPending = allDownlines.filter(u => !u._commissionPaid).reduce((s,u) => s + u._commission, 0);
+        document.getElementById("statCount").textContent    = allDownlines.length;
+        document.getElementById("statEarnings").textContent = fmtNGN(totalEarned);
+        document.getElementById("statPending").textContent  = fmtNGN(totalPending);
+        document.getElementById("actBadge").textContent     = allDownlines.length + " referrals";
+
+        renderTable(allDownlines);
+      } catch(e) {
+        console.error("loadDownlines error:", e);
+        toast("Error loading referrals: " + e.message, "error");
+        renderTable([]);
+      }
+    }
+
+    /* ── Render table ── */
+    function renderTable(rows) {
+      const tbody = document.getElementById("refTableBody");
+      const empty = document.getElementById("emptyState");
+
+      if (!rows.length) {
+        tbody.innerHTML = "";
+        empty.style.display = "block";
+        return;
+      }
+      empty.style.display = "none";
+
+      tbody.innerHTML = rows.map(u => {
+        const name  = u.fullName || u.firstName || u.email?.split("@")[0] || "User";
+        const date  = fmtDate(u.createdAt);
+        const lvlCls = ["","lb1","lb2","lb3"][u.level] || "lb1";
+        return `<tr>
+          <td>
+            <div class="td-name" title="${name}">${name}</div>
+            <div class="td-email">${u.email||"–"}</div>
+          </td>
+          <td><span class="level-badge ${lvlCls}">L${u.level}</span></td>
+          <td class="td-amount">${fmtNGN(u._commission)}</td>
+          <td class="td-date">${date}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    /* ── Auth ── */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        toast("Please sign in first.", "error");
+        setTimeout(() => window.location.href = "login.html", 2000);
+        return;
+      }
+
+      /* Avatar initials */
+      const ini = (user.displayName || user.email || "U")
+        .split(" ").map(w => w[0] || "").join("").toUpperCase().slice(0,2) || "U";
+      document.getElementById("navAvatar").textContent = ini;
+
+      /* Load user doc */
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const data = snap.exists() ? snap.data() : {};
+
+        const code = data.referralCode || user.uid.slice(0,8).toUpperCase();
+        currentRefCode = code;
+        currentRefLink = `${getBaseURL()}/index.html?ref=${code}`;
+
+        document.getElementById("refCode").textContent = code;
+        const lb = document.getElementById("refLinkBox");
+        lb.textContent = currentRefLink;
+        lb.classList.remove("loading");
+
+        updateShareLinks(currentRefLink, code);
+
+        /* Existing earnings from user doc */
+        if (data.referralEarnings) {
+          document.getElementById("statEarnings").textContent = fmtNGN(data.referralEarnings);
+        }
+
+        /* Load all 3-level downlines */
+        await loadDownlines(user.uid);
+
+      } catch(e) {
+        console.error("Auth load error:", e);
+        toast("Failed to load referral data.", "error");
+      }
+    });
+  </script>
+</body>
+</html>
